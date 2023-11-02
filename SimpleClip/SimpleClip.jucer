@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="LodYfn" name="SimpleClip" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginCode="SCLP" companyName="PotenzaDSP" pluginManufacturerCode="PTNZ"
+              pluginManufacturer="PotenzaDSP" pluginFormats="buildAU,buildVST3"
+              pluginName="SimpleClip">
+  <MAINGROUP id="ttpKg9" name="SimpleClip">
+    <GROUP id="{842F256B-A952-19BA-8D02-630256C839AE}" name="Source">
+      <GROUP id="{F5E4F922-68E4-75CD-C957-607A88C0101E}" name="Components">
+        <FILE id="CYVnav" name="LevelMeter.h" compile="0" resource="0" file="Source/LevelMeter.h"/>
+        <FILE id="GPS1mo" name="ScopeComponent.h" compile="0" resource="0"
+              file="Source/ScopeComponent.h"/>
+        <FILE id="L8QqfM" name="ShaperView.h" compile="0" resource="0" file="Source/ShaperView.h"/>
+        <FILE id="BeNirC" name="StereoLevelMeter.h" compile="0" resource="0"
+              file="Source/StereoLevelMeter.h"/>
+      </GROUP>
+      <GROUP id="{EAE08CE0-AA14-F6DB-55D7-289D47615DDE}" name="Util">
+        <FILE id="dD9jpM" name="AudioBufferQueue.h" compile="0" resource="0"
+              file="Source/AudioBufferQueue.h"/>
+        <FILE id="mP136s" name="consts.h" compile="0" resource="0" file="Source/consts.h"/>
+        <FILE id="batrsx" name="Params.h" compile="0" resource="0" file="Source/Params.h"/>
+        <FILE id="JSpGRx" name="ScopeDataCollector.h" compile="0" resource="0"
+              file="Source/ScopeDataCollector.h"/>
+        <FILE id="vnG1W1" name="SimpleClipLookAndFeel.h" compile="0" resource="0"
+              file="Source/SimpleClipLookAndFeel.h"/>
+        <FILE id="J6MANP" name="WaveShaper.h" compile="0" resource="0" file="Source/WaveShaper.h"/>
+      </GROUP>
+      <GROUP id="{7433B06D-B19A-F9AE-BCCC-A23074034D15}" name="Processors">
+        <FILE id="HNhaJ6" name="Clipper.cpp" compile="1" resource="0" file="Source/Clipper.cpp"/>
+        <FILE id="SvjGqK" name="Clipper.h" compile="0" resource="0" file="Source/Clipper.h"/>
+      </GROUP>
+      <FILE id="P2CKDw" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="WUER2I" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="lcdu1V" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="MamgOQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="ptnz_gui" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" extraLinkerFlags="-Wl,-weak_reference_mismatches,weak"
+               extraDefs="JUCE_SILENCE_XCODE_15_LINKER_WARNING">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="SimpleClip" osxArchitecture="64BitIntel"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="SimpleClip" osxArchitecture="64BitIntel"
+                       osxCompatibility="10.13 SDK" macOSDeploymentTarget="10.13"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui" path="../modules"/>
+        <MODULEPATH id="ptnz_gui"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
