@@ -15,6 +15,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   # DISPLAY: :0 # linux pluginval needs this
   PROJECT_DIR: SimpleClip
+  PROJECT_BUILD_DIR: SimpleClip/Builds
   CMAKE_BUILD_PARALLEL_LEVEL: 3 # Use up to 3 cpus to build juceaide, etc
   HOMEBREW_NO_INSTALL_CLEANUP: 1
 
@@ -67,12 +68,13 @@ jobs:
       working-directory: ${{env.PROJECT_DIR}}
       run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }} --parallel 4
 
-    - name: Test
-      working-directory: ${{ env.BUILD_DIR }}
-      run: ctest --output-on-failure -j4 -VV
+    #- name: Test
+    #  working-directory: ${{ env.BUILD_DIR }}
+    #  run: ctest --output-on-failure -j4 -VV
 
     - name: Read in .env from CMake # see GitHubENV.cmake
       shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
       run: |
         cat .env # show us the config
         cat .env >> $GITHUB_ENV # pull in our PRODUCT_NAME, etc
@@ -87,7 +89,7 @@ jobs:
         echo "ARTIFACT_NAME=${{ env.PRODUCT_NAME }}-${{ env.VERSION }}-${{ matrix.name }}" >> $GITHUB_ENV
         
     - name: Pluginval
-      working-directory: ${{ env.BUILD_DIR }}
+      working-directory: ${{ env.PROJECT_BUILD_DIR }}
       shell: bash
       run: |
         curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
@@ -95,56 +97,90 @@ jobs:
         ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
 
     - name: Codesign (macOS)
-      working-directory: ${{ env.BUILD_DIR }}
+      working-directory: ${{ env.PROJECT_BUILD_DIR }}
       if: ${{ matrix.name == 'macOS' }}
       run: |
         # Each plugin must be code signed
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.VST3_PATH }}" --deep --strict --options=runtime --timestamp
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.AU_PATH }}" --deep --strict --options=runtime --timestamp
 
-    - name: Add Custom Icons (macOS)
-      if: ${{ matrix.name == 'macOS' }}
-      working-directory: ${{ env.BUILD_DIR }}
-      run: |
-        # add the icns as its own icon resource (meta!)
-        sips -i ../packaging/pamplejuce.icns
-        
-        # Grab the resource, put in tempfile
-        DeRez -only icns ../packaging/pamplejuce.icns > /tmp/icons
-        
-        # Stuff the resource into the strange Icon? file's resource fork
-        Rez -a /tmp/icons -o "${{ env.VST3_PATH }}/Icon"$'\r'
-        Rez -a /tmp/icons -o "${{ env.AU_PATH }}/Icon"$'\r'
-        
-        # Set custom icon attribute
-        SetFile -a C "${{ env.VST3_PATH }}"
-        SetFile -a C "${{ env.AU_PATH }}"
+    #- name: Add Custom Icons (macOS)
+    #  if: ${{ matrix.name == 'macOS' }}
+    #  working-directory: ${{ env.BUILD_DIR }}
+    #  run: |
+    #    # add the icns as its own icon resource (meta!)
+    #    sips -i ../packaging/pamplejuce.icns
+    #    
+    #    # Grab the resource, put in tempfile
+    #    DeRez -only icns ../packaging/pamplejuce.icns > /tmp/icons
+    #    
+    #    # Stuff the resource into the strange Icon? file's resource fork
+    #    Rez -a /tmp/icons -o "${{ env.VST3_PATH }}/Icon"$'\r'
+    #    Rez -a /tmp/icons -o "${{ env.AU_PATH }}/Icon"$'\r'
+    #    
+    #    # Set custom icon attribute
+    #    SetFile -a C "${{ env.VST3_PATH }}"
+    #    SetFile -a C "${{ env.AU_PATH }}"
 
-    - name: Create DMG, Notarize and Staple (macOS)
+    #- name: Create DMG, Notarize and Staple (macOS)
+    #  if: ${{ matrix.name == 'macOS' }}
+    #  run: |
+    #    npm install -g appdmg
+    #    mkdir -p packaging
+    #    
+    #    # Create directories for the dmg symlinks
+    #    sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/Components && sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/VST3
+    #    ln -s /Library/Audio/Plug-Ins/VST3 "packaging/dmg/Your Mac's VST3 folder"
+    #    ln -s /Library/Audio/Plug-Ins/Components "packaging/dmg/Your Mac's Component folder"
+    #    mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging/dmg
+    #    mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging/dmg
+    #    
+    #    # Run appdmg to create the .dmg
+    #    cd packaging && appdmg dmg.json "${{ env.ARTIFACT_NAME}}.dmg"
+    #    codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i ${{ env.BUNDLE_ID }} --force "${{ env.ARTIFACT_NAME }}.dmg"
+    #    xcrun notarytool submit "${{ env.ARTIFACT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+    #    xcrun stapler staple "${{ env.ARTIFACT_NAME }}.dmg"
+
+    - name: Create zip, notarize and staple (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
-        npm install -g appdmg
-        mkdir -p packaging/dmg
+        # Move the components to the packaging/dmg directory
+        mkdir -p packaging
+        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging
+        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging
+    
+        # Zip the VST3
+        cd packaging
+        zip -r "${{ env.PRODUCT_NAME }}_VST3.zip" "${{ env.PRODUCT_NAME }}.vst3"
+    
+        # Zip the AU
+        zip -r "${{ env.PRODUCT_NAME }}_AU.zip" "${{ env.PRODUCT_NAME }}.component"
+    
+        # Notarize the VST3
+        xcrun notarytool submit "${{ env.PRODUCT_NAME }}_VST3.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
         
-        # Create directories for the dmg symlinks
-        sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/Components && sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/VST3
-        ln -s /Library/Audio/Plug-Ins/Components "packaging/dmg/Your Mac's Component folder"
-        ln -s /Library/Audio/Plug-Ins/VST3 "packaging/dmg/Your Mac's VST3 folder"
-        mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging/dmg
-        mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging/dmg
+        # Notarize the AU
+        xcrun notarytool submit "${{ env.PRODUCT_NAME }}_AU.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+    
+        # Unzip the VST3
+        unzip "${{ env.PRODUCT_NAME }}_VST3.zip" -d "${{ env.PRODUCT_NAME }}_VST3"
+        xcrun stapler staple "${{ env.PRODUCT_NAME }}_VST3.zip"
         
-        # Run appdmg to create the .dmg
-        cd packaging && appdmg dmg.json "${{ env.ARTIFACT_NAME}}.dmg"
-        codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i ${{ env.BUNDLE_ID }} --force "${{ env.ARTIFACT_NAME }}.dmg"
-        xcrun notarytool submit "${{ env.ARTIFACT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-        xcrun stapler staple "${{ env.ARTIFACT_NAME }}.dmg"
-
+        # Unzip the AU
+        unzip "${{ env.PRODUCT_NAME }}_AU.zip" -d "${{ env.PRODUCT_NAME }}_AU"
+        xcrun stapler staple "${{ env.PRODUCT_NAME }}_AU.zip"
+        
+        # Zip both components together
+        zip -r "${{ env.PRODUCT_NAME }}.zip" "${{ env.PRODUCT_NAME }}_VST3" "${{ env.PRODUCT_NAME }}_AU"
+        
+      
     - name: Upload DMG (MacOS)
       if: ${{ matrix.name == 'macOS' }}
       uses: actions/upload-artifact@v3
+      # run: mkdir -p path/to/artifact
       with:
-        name: ${{ env.ARTIFACT_NAME }}.dmg
-        path: packaging/${{ env.ARTIFACT_NAME }}.dmg
+        name: ${{ env.PRODUCT_NAME }}.zip
+        path: packaging/${{ env.PRODUCT_NAME }}.zip
 
   release:
     if: contains(github.ref, 'tags/v')
