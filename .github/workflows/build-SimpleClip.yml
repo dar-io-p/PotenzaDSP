@@ -173,6 +173,7 @@ jobs:
         xcrun stapler staple "${{ env.PRODUCT_NAME }}.component"
         
         # Zip both components together
+        ls
         zip -r "${{ env.PRODUCT_NAME }}.zip" "${{ env.PRODUCT_NAME }}.vst3" "${{ env.PRODUCT_NAME }}.component"
         
       
