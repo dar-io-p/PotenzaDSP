@@ -163,11 +163,11 @@ jobs:
         xcrun notarytool submit "${{ env.PRODUCT_NAME }}_AU.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
     
         # Unzip the VST3
-        unzip "${{ env.PRODUCT_NAME }}_VST3.zip" -d "${{ env.PRODUCT_NAME }}"
+        unzip "${{ env.PRODUCT_NAME }}_VST3.zip"
         xcrun stapler staple "${{ env.PRODUCT_NAME }}.vst3"
         
         # Unzip the AU
-        unzip "${{ env.PRODUCT_NAME }}_AU.zip" -d "${{ env.PRODUCT_NAME }}"
+        unzip "${{ env.PRODUCT_NAME }}_AU.zip"
         xcrun stapler staple "${{ env.PRODUCT_NAME }}.component"
         
         # Zip both components together
