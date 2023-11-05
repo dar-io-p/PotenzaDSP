@@ -185,6 +185,9 @@ jobs:
         name: ${{ env.PRODUCT_NAME }}.zip
         path: packaging/${{ env.PRODUCT_NAME }}.zip
 
+    - name: Get Artifacts
+      uses: actions/download-artifact@v3
+
   release:
     # if: contains(github.ref, 'tags/v')
     runs-on: ubuntu-latest
