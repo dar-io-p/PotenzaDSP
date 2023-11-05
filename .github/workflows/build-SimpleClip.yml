@@ -144,7 +144,7 @@ jobs:
     - name: Create zip, notarize and staple (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
-        # Move the components to the packaging/dmg directory
+        # Move the components to the packaging directory
         mkdir -p packaging
         mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging
         mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging
@@ -152,9 +152,11 @@ jobs:
         # Zip the VST3
         cd packaging
         zip -r "${{ env.PRODUCT_NAME }}_VST3.zip" "${{ env.PRODUCT_NAME }}.vst3"
+        rm -rf "${{ env.PRODUCT_NAME }}.vst3"
     
         # Zip the AU
         zip -r "${{ env.PRODUCT_NAME }}_AU.zip" "${{ env.PRODUCT_NAME }}.component"
+        rm -rf "${{ env.PRODUCT_NAME }}.component"
     
         # Notarize the VST3
         xcrun notarytool submit "${{ env.PRODUCT_NAME }}_VST3.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
