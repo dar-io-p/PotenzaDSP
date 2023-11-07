@@ -10,21 +10,21 @@ include (PamplejuceVersion)
 # This is the internal name of the project and the name of JUCE's shared code "target"
 # Note: This cannot have spaces (it may be 2023, but you can't have it all!)
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is DAWs display)
-set(PROJECT_NAME "SimpleSub")
+set(PROJECT_NAME "PullUpMachine")
 
 # Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
 # You can also just have it be the same thing as PROJECT_NAME
 # You may want to append the major version on the end of this (and PROJECT_NAME) ala:
-#   set(PROJECT_NAME "SimpleSub_v${MAJOR_VERSION}")
+#   set(PROJECT_NAME "PullUpMachine_v${MAJOR_VERSION}")
 # Doing so enables major versions to show up in IDEs and DAWs as separate plugins
 # allowing you to change parameters and behavior without breaking existing user projects
-set(PRODUCT_NAME "SimpleSub")
+set(PRODUCT_NAME "PullUpMachine")
 
 # Change me! Used for the MacOS bundle name and Installers
 set(COMPANY_NAME "PotenzaDSP")
 
 # Change me! Used for the MacOS bundle identifier (and signing)
-set(BUNDLE_ID "com.PotenzaDSP.SimpleSub")
+set(BUNDLE_ID "com.PotenzaDSP.PullUpMachine")
 
 # Change me! Set the plugin formats you want built
 # Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
@@ -66,18 +66,16 @@ juce_add_plugin("${PROJECT_NAME}"
     # Change me!
     # A unique four-character plugin id
     # Note: this must have at least one upper-case character
-    PLUGIN_CODE Ssub
+    PLUGIN_CODE PUmc
     FORMATS "${FORMATS}"
 
     # The name of your final executable
     # This is how it's listed in the DAW
     # This can be different from PROJECT_NAME and can have spaces!
     # You might want to use v${MAJOR_VERSION} here once you go to v2...
-    PRODUCT_NAME "${PRODUCT_NAME}"
-    IS_SYNTH TRUE
-    NEEDS_MIDI_INPUT TRUE)
+    PRODUCT_NAME "${PRODUCT_NAME}")
 
-juce_generate_juce_header(SimpleSub)
+juce_generate_juce_header(PullUpMachine)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
@@ -118,7 +116,7 @@ target_compile_definitions(SharedCode
     VERSION="${CURRENT_VERSION}"
 
     # JucePlugin_Name is for some reason doesn't use the nicer PRODUCT_NAME
-    PRODUCT_NAME_WITHOUT_VERSION="SimpleSub"
+    PRODUCT_NAME_WITHOUT_VERSION="PullUpMachine"
 )
 
 # Link to any other modules you added (with juce_add_module) here!
