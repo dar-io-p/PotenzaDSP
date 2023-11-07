@@ -368,17 +368,6 @@ public:
     Distortion()
     {
         drive.setRampDurationSeconds(0.05);
-//        waveShapers[param::CubicAlgo].functionToUse = [] (float x) {
-//            float sign = (x>0) - (x<0);
-//            float output = fabs(x) > 1 ? sign : 1.5*(x-(x*x*x)/3);
-//            return output;
-//        };
-//        waveShapers[param::TanhAlgo].functionToUse = [] (float x) {
-//            return juce::dsp::FastMathApproximations::tanh(juce::jlimit(-5.f, 5.f, x));
-//        };
-//        waveShapers[param::SinAlgo].functionToUse = [] (float x) {
-//            return juce::dsp::FastMathApproximations::sin(x);
-//        };
         waveShapers[param::CubicAlgo].functionToUse = param::getWaveShaper(param::CubicAlgo);
         waveShapers[param::TanhAlgo].functionToUse = param::getWaveShaper(param::TanhAlgo);
         waveShapers[param::SinAlgo].functionToUse = param::getWaveShaper(param::SinAlgo);
