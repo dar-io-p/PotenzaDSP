@@ -416,6 +416,7 @@ public:
     {
         for (auto& ws : waveShapers)
             ws.prepare(spec);
+        drive.prepare(spec);
     }
     
 private:
@@ -531,7 +532,7 @@ public:
     {
         const auto noteToStart = getCurrentlyPlayingNote();
         
-        auto velocity = noteToStart.noteOnVelocity.asUnsignedFloat();
+        auto velocity = 1.0f;//noteToStart.noteOnVelocity.asUnsignedFloat();
         
         auto& osc = processorChain.get<oscIndex>();
         auto& env = processorChain.get<envIndex>();
