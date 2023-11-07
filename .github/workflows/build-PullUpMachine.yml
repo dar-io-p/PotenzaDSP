@@ -1,0 +1,172 @@
+name: build-PullUpMachine
+
+on:
+  workflow_dispatch: # lets you run a build from the UI
+  ##push:
+
+# When pushing new commits, cancel any running builds on that branch
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUILD_TYPE: Release
+  BUILD_DIR: Builds
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # DISPLAY: :0 # linux pluginval needs this
+  PROJECT_DIR: PullUpMachine
+  PROJECT_BUILD_DIR: PullUpMachine/Builds
+  CMAKE_BUILD_PARALLEL_LEVEL: 3 # Use up to 3 cpus to build juceaide, etc
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
+# jobs are run in paralell on different machines
+# all steps run in series
+jobs:
+  build_and_test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
+      matrix:
+        include:
+          - name: macOS
+            os: macos-12
+            pluginval-binary: pluginval.app/Contents/MacOS/pluginval
+            ccache: ccache
+
+    steps:
+
+    - name: Install macOS Deps
+      if: ${{ matrix.name == 'macOS' }}
+      run: brew install ninja osxutils
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        submodules: true # Get JUCE populated
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@main
+      with:
+        key: v3-${{ matrix.os }}-${{ matrix.type }}
+        variant: ${{ matrix.ccache }}
+
+    - name: Import Certificates (macOS)
+      uses: apple-actions/import-codesign-certs@v2 # only exists as a tag right now
+      if: ${{ matrix.name == 'macOS' }}
+      with:
+        p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+        p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+
+    - name: Configure
+      shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
+      run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" .
+
+    - name: Build
+      shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
+      run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }} --parallel 4
+
+    #- name: Test
+    #  working-directory: ${{ env.BUILD_DIR }}
+    #  run: ctest --output-on-failure -j4 -VV
+
+    - name: Read in .env from CMake # see GitHubENV.cmake
+      shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
+      run: |
+        cat .env # show us the config
+        cat .env >> $GITHUB_ENV # pull in our PRODUCT_NAME, etc
+
+    - name: Set additional env vars for next steps
+      shell: bash
+      run: |
+        echo "ARTIFACTS_PATH=${{ env.BUILD_DIR }}/${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}" >> $GITHUB_ENV
+        echo "VST3_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/VST3/${{ env.PRODUCT_NAME }}.vst3" >> $GITHUB_ENV
+        echo "AU_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AU/${{ env.PRODUCT_NAME }}.component" >> $GITHUB_ENV
+        echo "AUV3_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AUv3/${{ env.PRODUCT_NAME }}.appex" >> $GITHUB_ENV          
+        echo "ARTIFACT_NAME=${{ env.PRODUCT_NAME }}-${{ env.VERSION }}-${{ matrix.name }}" >> $GITHUB_ENV
+        
+    - name: Pluginval
+      working-directory: ${{ env.PROJECT_BUILD_DIR }}
+      shell: bash
+      run: |
+        curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
+        7z x pluginval_${{ matrix.name }}.zip
+        ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
+
+    - name: Codesign (macOS)
+      working-directory: ${{ env.PROJECT_BUILD_DIR }}
+      if: ${{ matrix.name == 'macOS' }}
+      run: |
+        # Each plugin must be code signed
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.VST3_PATH }}" --deep --strict --options=runtime --timestamp
+        codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.AU_PATH }}" --deep --strict --options=runtime --timestamp
+
+    - name: Create zip, notarize and staple (macOS)
+      if: ${{ matrix.name == 'macOS' }}
+      run: |
+        # Move the components to the packaging directory
+        mkdir -p packaging
+        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging
+        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging
+    
+        # Zip the VST3
+        cd packaging
+        zip -r "${{ env.PRODUCT_NAME }}_VST3.zip" "${{ env.PRODUCT_NAME }}.vst3"
+        rm -rf "${{ env.PRODUCT_NAME }}.vst3"
+    
+        # Zip the AU
+        zip -r "${{ env.PRODUCT_NAME }}_AU.zip" "${{ env.PRODUCT_NAME }}.component"
+        rm -rf "${{ env.PRODUCT_NAME }}.component"
+    
+        # Notarize the VST3
+        xcrun notarytool submit "${{ env.PRODUCT_NAME }}_VST3.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+        
+        # Notarize the AU
+        xcrun notarytool submit "${{ env.PRODUCT_NAME }}_AU.zip" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
+    
+        # Unzip the VST3
+        unzip "${{ env.PRODUCT_NAME }}_VST3.zip"
+        xcrun stapler staple "${{ env.PRODUCT_NAME }}.vst3"
+        
+        # Unzip the AU
+        unzip "${{ env.PRODUCT_NAME }}_AU.zip"
+        xcrun stapler staple "${{ env.PRODUCT_NAME }}.component"
+        
+        # Zip both components together
+        ls
+        zip -r "${{ env.PRODUCT_NAME }}.zip" "${{ env.PRODUCT_NAME }}.vst3" "${{ env.PRODUCT_NAME }}.component"
+        
+      
+    - name: Upload DMG (MacOS)
+      if: ${{ matrix.name == 'macOS' }}
+      uses: actions/upload-artifact@v3
+      # run: mkdir -p path/to/artifact
+      with:
+        name: ${{ env.PRODUCT_NAME }}.zip
+        path: packaging/${{ env.PRODUCT_NAME }}.zip
+
+    - name: Get Artifacts
+      uses: actions/download-artifact@v3
+
+  release:
+    # if: contains(github.ref, 'tags/v')
+    runs-on: ubuntu-latest
+    needs: build_and_test
+
+    steps:
+    - name: Get Artifacts
+      uses: actions/download-artifact@v3
+
+    #- name: Create Release
+    #  uses: softprops/action-gh-release@v1
+    #  with:
+    #    prerelease: true
+    #    # download-artifact puts these files in their own dirs...
+    #    # Using globs sidesteps having to pass the version around
+    #    files: |
+    #      */*.exe
+    #      */*.zip
+    #      */*.dmg
