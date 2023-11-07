@@ -73,7 +73,9 @@ juce_add_plugin("${PROJECT_NAME}"
     # This is how it's listed in the DAW
     # This can be different from PROJECT_NAME and can have spaces!
     # You might want to use v${MAJOR_VERSION} here once you go to v2...
-    PRODUCT_NAME "${PRODUCT_NAME}")
+    PRODUCT_NAME "${PRODUCT_NAME}"
+    IS_SYNTH TRUE
+    NEEDS_MIDI_INPUT TRUE)
 
 juce_generate_juce_header(SimpleSub)
 
@@ -94,7 +96,7 @@ file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sou
 target_sources(SharedCode INTERFACE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
-include(Assets)
+# include(Assets)
 
 # MacOS only: Cleans up folder and target organization on Xcode.
 include(XcodePrettify)
