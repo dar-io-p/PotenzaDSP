@@ -89,10 +89,13 @@ public:
     {
         juce::dsp::ProcessContextReplacing<float> ctx(context);
         juce::dsp::AudioBlock<float> leftBlock = ctx.getOutputBlock().getSingleChannelBlock(0);
-        juce::dsp::AudioBlock<float> rightBlock = ctx.getOutputBlock().getSingleChannelBlock(1);
+        if (ctx.getOutputBlock().getNumChannels() > 1)
+        {
+            juce::dsp::AudioBlock<float> rightBlock = ctx.getOutputBlock().getSingleChannelBlock(1);
+            processors[1].process(juce::dsp::ProcessContextReplacing<float>(rightBlock));
+        }
         
         processors[0].process(juce::dsp::ProcessContextReplacing<float>(leftBlock));
-        processors[1].process(juce::dsp::ProcessContextReplacing<float>(rightBlock));
     }
     
     //==============================================================================
@@ -103,19 +106,21 @@ public:
     }
     void setWidth(float w)
     {
-        auto rate =     juce::jmap(w, 0.f, 1.f, 0.5f, 3.f);
-        auto depth =    juce::jmap(w, 0.f, 1.f, 0.f, 0.25f);
-        auto delayL =    juce::jmap(w, 0.f, 1.f, 5.f, 7.f);
-        auto delayR =    juce::jmap(w, 0.f, 1.f, 5.5f, 9.f);
-        auto mix =      juce::jmap(w, 0.f, 1.f, 0.f, 0.7f);
+        auto rateL =     juce::jmap  (w,     0.f,    1.f,    0.5f,   3.f);
+        auto rateR =     juce::jmap  (w,     0.f,    1.f,    0.5f,   4.f);
+        auto depth =    juce::jmap  (w,     0.f,    1.f,    0.f,    0.25f);
+        auto delayL =   juce::jmap  (w,     0.f,    1.f,    5.f,    7.f);
+        auto delayR =   juce::jmap  (w,     0.f,    1.f,    5.5f,   9.f);
+        auto mix =      juce::jmap  (w,     0.f,    1.f,    0.f,    0.6f);
         for (auto& ch : processors)
         {
-            ch.setRate(rate);
             ch.setDepth(depth);
             ch.setMix(mix);
         }
         processors[0].setCentreDelay(delayL);
-        processors[1].setCentreDelay(delayR);
+        processors[1].setCentreDelay(delayL);
+        processors[0].setRate(rateL);
+        processors[1].setRate(rateR);
 
     }
 private:
@@ -541,6 +546,7 @@ public:
                 env.gate(true);
                 osc.setVelocity(velocity);
                 noteSmoother.setCurrentAndTargetValue(noteValue);
+                osc.setFrequency(getFrequencyFromMidi(noteSmoother.getCurrentValue()), true);
             }
             else{
                 if(env.getState() == Envelope::Release)
