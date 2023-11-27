@@ -4,6 +4,8 @@
 #include "ptnz_gui/ptnz_gui.h"
 #include "Parameters.h"
 #include "EnvelopeViewer.h"
+#include "SimpleSubLookAndFeel.h"
+
 //==============================================================================
 /*
 */
@@ -11,12 +13,12 @@ class EnvelopePanel  : public juce::Component
 {
 public:
     EnvelopePanel(juce::AudioProcessorValueTreeState& apvts) :
-    attackSlider(apvts, param::toID(param::param_attack), param::toName(param::param_attack)),
-    decaySlider(apvts, param::toID(param::param_decay), param::toName(param::param_decay)),
-    sustainSlider(apvts, param::toID(param::param_sustain), param::toName(param::param_sustain)),
-    releaseSlider(apvts, param::toID(param::param_release), param::toName(param::param_release)),
-    curve_A_slider(apvts, param::toID(param::param_A_curve), param::toName(param::param_A_curve)),
-    curve_DR_slider(apvts, param::toID(param::param_DR_curve), param::toName(param::param_DR_curve))
+    attackSlider(apvts, param::toID(param::param_attack), param::toName(param::param_attack), &lnf),
+    decaySlider(apvts, param::toID(param::param_decay), param::toName(param::param_decay), &lnf),
+    sustainSlider(apvts, param::toID(param::param_sustain), param::toName(param::param_sustain), &lnf),
+    releaseSlider(apvts, param::toID(param::param_release), param::toName(param::param_release), &lnf),
+    curve_A_slider(apvts, param::toID(param::param_A_curve), param::toName(param::param_A_curve), &lnf),
+    curve_DR_slider(apvts, param::toID(param::param_DR_curve), param::toName(param::param_DR_curve), &lnf)
     {
         attackParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_attack)));
         decayParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_decay)));
@@ -58,10 +60,12 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setColour(juce::Colours::darkgrey);
-        g.drawRoundedRectangle(envelopeViewer.getBounds().expanded(6, 6).toFloat(), 5.f, 3.f);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
+        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(6, 6).toFloat(), 8.f);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::secondaryBackground));
+        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(2, 2).toFloat(), 8.f);
         
-        g.setColour(juce::Colours::white);
+        g.setColour(lnf.findColour(juce::Label::textColourId));
         g.setFont(juce::Font(12.f));
         g.drawFittedText("A", attackSlider.slider.getBounds(), juce::Justification::topLeft, 1);
         g.drawFittedText("D", decaySlider.slider.getBounds(), juce::Justification::topLeft, 1);
@@ -93,6 +97,8 @@ public:
     }
 
 private:
+    SimpleSubLookAndFeel lnf;
+
     ptnz_gui::AttachedSlider attackSlider;
     ptnz_gui::AttachedSlider decaySlider;
     ptnz_gui::AttachedSlider sustainSlider;
@@ -109,6 +115,7 @@ private:
     juce::AudioParameterFloat* releaseCurveParam;
     
     EnvelopeViewer envelopeViewer;
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopePanel)
 };

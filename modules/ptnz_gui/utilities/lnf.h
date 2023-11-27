@@ -4,18 +4,48 @@
 namespace ptnz_gui
 {
 
+enum colour_ids
+{
+    buttonBackground,
+    buttonHoverBackground,
+    buttonDownBackground,
+    buttonAccent,
+    
+    mainBackground,
+    secondaryBackground,
+    
+    outlineColour,
+    
+    accent,
+    secondaryAccent,
+    
+    white,
+};
+
 class LNF : public juce::LookAndFeel_V4
 {
 public:
     LNF()
     {
-        setColour(juce::Slider::thumbColourId, juce::Colours::white);
-        setColour(juce::Slider::trackColourId, juce::Colours::yellow);
-        setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::white);
-        setColour(juce::Slider::backgroundColourId, juce::Colours::yellow);
+        setColour(juce::Slider::thumbColourId, juce::Colours::whitesmoke);
+        //setColour(juce::Slider::trackColourId, juce::Colour(0xff2e5090));
+        //setColour(juce::Slider::trackColourId, juce::Colour(0xff084696));
+        setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::whitesmoke);
+        // setColour(juce::Slider::backgroundColourId, juce::Colour(0xff084696));
         
-        setColour(juce::Label::textColourId, juce::Colours::white);
+        setColour(juce::Label::textColourId, juce::Colours::whitesmoke);
         setColour(juce::Label::outlineColourId, juce::Colours::yellow);
+        
+        setColour(colour_ids::accent, juce::Colours::yellow);
+        setColour(colour_ids::secondaryAccent, juce::Colours::lightyellow);
+        
+        setColour(colour_ids::buttonBackground, juce::Colour(60, 60, 80));
+        setColour(colour_ids::buttonDownBackground, juce::Colour(30, 30, 60));
+        setColour(colour_ids::buttonHoverBackground, juce::Colour(40, 40, 50));
+        setColour(colour_ids::buttonAccent, juce::Colours::yellow);
+        
+        setColour(colour_ids::outlineColour, juce::Colours::black);
+        setColour(colour_ids::white, juce::Colours::white);
     }
     
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
@@ -42,9 +72,10 @@ public:
     
         arc.clear();
         arc.addCentredArc(centreX, centreY, radius * 0.8f, radius * 0.8f, 0.f, rotaryStartAngle, juce::jmax(angle - spacing - 0.05f, rotaryStartAngle), true);
+        
         //draw Partially filled arc
-        g.setColour (findColour(juce::Slider::trackColourId));
-        g.strokePath(arc, juce::PathStrokeType(2.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        g.setColour (findColour(colour_ids::accent));
+        g.strokePath(arc, juce::PathStrokeType(3.f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         
         //POINTER
         juce::Path p;
@@ -57,10 +88,10 @@ public:
         //g.fillPath(p);
         g.strokePath(p, juce::PathStrokeType(pointerThickness, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         
-        g.setColour(findColour(juce::Slider::backgroundColourId));
+        g.setColour(findColour(colour_ids::accent));
         if(slider.isMouseButtonDown())
         {
-            g.fillEllipse(bounds.reduced(radius - radius * sliderPos * 0.2));
+            g.fillEllipse(bounds.reduced(radius - radius * sliderPos * 0.23));
         }
     }
     
@@ -70,8 +101,8 @@ public:
         g.setFont(label.getHeight() * 0.8);
         g.drawFittedText(label.getText(), label.getLocalBounds(), juce::Justification::centred, 1);
         
-        g.setColour(findColour(juce::Label::outlineColourId));
-        g.drawRoundedRectangle(label.getLocalBounds().toFloat().reduced(2.f), 5.f, 2.f);
+        g.setColour(findColour(colour_ids::accent));
+        //g.drawRoundedRectangle(label.getLocalBounds().toFloat().reduced(2.f), 5.f, 2.f);
     }
     
     juce::Slider::SliderLayout getSliderLayout(juce::Slider& slider) override
@@ -93,7 +124,7 @@ public:
         g.setColour(findColour(juce::Slider::rotarySliderOutlineColourId));
         g.drawRoundedRectangle(bounds.toFloat(), 4.f, 2.f);
         
-        g.setColour(findColour(juce::Slider::trackColourId));
+        g.setColour(findColour(colour_ids::accent));
         g.fillRoundedRectangle(slider.isHorizontal() ? juce::Rectangle<float> (static_cast<float> (x), (float) y + 0.5f, sliderPos - (float) x, (float) height - 1.0f)
                                           : juce::Rectangle<float> ((float) x + 0.5f, sliderPos, (float) width - 1.0f, (float) y + ((float) height - sliderPos)), 4.f);
     }

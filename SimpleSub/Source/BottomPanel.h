@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "ptnz_gui/ptnz_gui.h"
 #include "Parameters.h"
+#include "SimpleSubLookAndFeel.h"
 //==============================================================================
 /*
 */
@@ -20,13 +21,13 @@ class BottomPanel  : public juce::Component
 {
 public:
     BottomPanel(juce::AudioProcessorValueTreeState& apvts) :
-    outGainSlider(apvts, param::toID(param::param_out_gain), param::toName(param::param_out_gain)),
-    widthSlider(apvts, param::toID(param::param_width), param::toName(param::param_width))
+    outGainSlider(apvts, param::toID(param::param_out_gain), param::toName(param::param_out_gain), &lnf),
+    widthSlider(apvts, param::toID(param::param_width), param::toName(param::param_width), &lnf)
     {
         for (auto i = 0; i < 5; i++) {
             param::PID pid = (param::PID) (param::param_harmonic_1 + i);
             jassert(pid < param::TotalNumParams);
-            harmonicSliders[i] = std::make_unique<ptnz_gui::AttachedSliderVertical>(apvts, param::toID(pid), param::toName(pid));
+            harmonicSliders[i] = std::make_unique<ptnz_gui::AttachedSliderVertical>(apvts, param::toID(pid), param::toName(pid), &lnf);
             addAndMakeVisible(harmonicSliders[i]->slider);
         }
         
@@ -40,7 +41,7 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setColour(juce::Colours::white);
+        g.setColour(lnf.findColour(juce::Label::textColourId));
         g.setFont(juce::Font(17.f));
         g.drawFittedText("WIDTH", widthSlider.slider.getX(), 0, widthSlider.slider.getWidth(), 30, juce::Justification::centred, 1);
         g.drawFittedText("OUT", outGainSlider.slider.getX(), 0, outGainSlider.slider.getWidth(), 30, juce::Justification::centred, 1);
@@ -66,11 +67,14 @@ public:
     }
 
 private:
+    SimpleSubLookAndFeel lnf;
+
     ptnz_gui::AttachedSlider outGainSlider;
     ptnz_gui::AttachedSlider widthSlider;
     
     using uniqueSlider = std::unique_ptr<ptnz_gui::AttachedSliderVertical>;
     std::array<uniqueSlider, 5> harmonicSliders;
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BottomPanel)
 };

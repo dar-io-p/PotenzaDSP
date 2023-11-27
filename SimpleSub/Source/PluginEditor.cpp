@@ -34,9 +34,14 @@ SimpleSubAudioProcessorEditor::~SimpleSubAudioProcessorEditor()
 void SimpleSubAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (juce::Colours::black);
-    g.setColour(juce::Colours::darkgrey);
-    g.drawRoundedRectangle(distPanel.getBounds().toFloat(), 5.f, 3.f);
+    g.fillAll (lnf.findColour(ptnz_gui::colour_ids::mainBackground));
+    
+    //g.drawRoundedRectangle(distPanel.getBounds().toFloat(), 5.f, 3.f);
+    //g.fillRoundedRectangle(distPanel.getBounds().toFloat(), 5.f);
+    g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
+    g.fillRoundedRectangle(distPanel.getBounds().expanded(6, 6).toFloat(), 8.f);
+    g.setColour(lnf.findColour(ptnz_gui::colour_ids::secondaryBackground));
+    g.fillRoundedRectangle(distPanel.getBounds().expanded(2, 2).toFloat(), 8.f);
 }
 
 void SimpleSubAudioProcessorEditor::resized()
@@ -50,5 +55,5 @@ void SimpleSubAudioProcessorEditor::resized()
     
     glidePanel.setBounds(bounds.removeFromLeft(w / 4).reduced(3));
     
-    distPanel.setBounds(bounds.removeFromTop(h * 3 / 8).reduced(3));
+    distPanel.setBounds(bounds.removeFromTop(h * 3 / 8).reduced(12, 12));
 }

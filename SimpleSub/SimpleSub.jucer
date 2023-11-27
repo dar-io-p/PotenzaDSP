@@ -14,6 +14,8 @@
       <FILE id="Vm5tQP" name="EnvelopeViewer.h" compile="0" resource="0"
             file="Source/EnvelopeViewer.h"/>
       <FILE id="nEGIi6" name="GlidePanel.h" compile="0" resource="0" file="Source/GlidePanel.h"/>
+      <FILE id="dphnLi" name="SimpleSubLookAndFeel.h" compile="0" resource="0"
+            file="Source/SimpleSubLookAndFeel.h"/>
       <FILE id="Kovsd5" name="WaveShaperDisplay.h" compile="0" resource="0"
             file="Source/WaveShaperDisplay.h"/>
     </GROUP>

@@ -129,7 +129,7 @@ namespace valToStr
 {
 inline ValToStr db(){
     return [](float value, int maxLen){
-        return String(value, 2) + " dB";
+        return String(value, 1) + " dB";
     };
 }
 
@@ -147,7 +147,7 @@ inline ValToStr generic(){
 
 inline ValToStr mS() {
     return [](float value, int maxLen){
-        return String(value, 2) + " mS";
+        return String(value, 1) + " mS";
     };
 }
 

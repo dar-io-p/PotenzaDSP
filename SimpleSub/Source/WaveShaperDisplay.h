@@ -55,9 +55,9 @@ public:
             p.lineTo(i, y_pixels);
         }
         p.startNewSubPath(0, 0);
-        g.setColour(juce::Colours::white);
-        g.strokePath(p, juce::PathStrokeType(2.f, juce::PathStrokeType::curved));
-        g.setColour(juce::Colours::white.withAlpha(0.5f));
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::secondaryAccent));
+        g.strokePath(p, juce::PathStrokeType(3.f, juce::PathStrokeType::curved));
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
         g.drawRoundedRectangle(bounds.toFloat().reduced(1), 1.f, 3.f);
     }
 
@@ -73,6 +73,7 @@ public:
     }
     
 private:
+    SimpleSubLookAndFeel lnf;
     int currentIndex;
     std::array<std::function<float(float)>, 3> waveShapers;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveShaperDisplay)

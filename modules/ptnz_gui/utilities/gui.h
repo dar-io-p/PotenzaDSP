@@ -9,11 +9,15 @@ using Attachment = juce::SliderParameterAttachment;
 
 struct AttachedSlider
 {
-    AttachedSlider(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& name) :
+    AttachedSlider(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& name, juce::LookAndFeel_V4* custom_lnf=nullptr) :
         slider(),
         attachment(*apvts.getParameter(iD), slider)
     {
-        slider.setLookAndFeel(&lnf);
+        if(custom_lnf)
+            slider.setLookAndFeel(custom_lnf);
+        else
+            slider.setLookAndFeel(&lnf);
+        
         slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 16);
         slider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     }
@@ -28,11 +32,14 @@ struct AttachedSlider
 
 struct AttachedSliderVertical
 {
-    AttachedSliderVertical(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& name) :
+    AttachedSliderVertical(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& name, juce::LookAndFeel_V4* custom_lnf=nullptr) :
         slider(),
         attachment(*apvts.getParameter(iD), slider)
     {
-        slider.setLookAndFeel(&lnf);
+        if(custom_lnf)
+            slider.setLookAndFeel(custom_lnf);
+        else
+            slider.setLookAndFeel(&lnf);
         //slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 16);
         slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
         slider.setSliderStyle(juce::Slider::LinearBarVertical);
@@ -55,7 +62,12 @@ public:
         Rectangle,
         Ellipse,
     };
-    ToggleButtonWithText(const juce::String& buttonText) : juce::ToggleButton(buttonText) {shape = Rectangle; setLookAndFeel(&lnf);}
+    ToggleButtonWithText(const juce::String& buttonText, juce::LookAndFeel_V4* custom_lnf=nullptr) :
+    juce::ToggleButton(buttonText)
+    {
+        shape = Rectangle; 
+        setLookAndFeel(&lnf);
+    }
     ToggleButtonWithText(const juce::String& buttonText, Shape buttonShape) :
     juce::ToggleButton(buttonText),
     shape(buttonShape)
@@ -70,11 +82,11 @@ public:
     
     void paintButton(juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        juce::Colour bgColour = juce::Colour(60, 60, 80);
+        juce::Colour bgColour = getLookAndFeel().findColour(colour_ids::buttonBackground);
         if (getToggleState())
-            bgColour = juce::Colour(30, 30, 60);// Set a different color for the "on" state
+            bgColour = getLookAndFeel().findColour(colour_ids::buttonDownBackground);// Set a different color for the "on" state
         if (isMouseOver())
-            bgColour = juce::Colour(40, 40, 50);
+            bgColour = getLookAndFeel().findColour(colour_ids::buttonHoverBackground);
         g.setColour(bgColour);
         
         switch (shape) {
@@ -98,7 +110,7 @@ public:
                 break;
         }
         
-        g.setColour(juce::Colours::whitesmoke);
+        g.setColour(getLookAndFeel().findColour(juce::TextButton::textColourOnId));
         auto h = getHeight();
         if (h > 50){
             g.setFont(20.f);
@@ -124,18 +136,18 @@ public:
 
     void paintButton(juce::Graphics& g, bool shouldDrawButtonAsHighlighted, bool shouldDrawButtonAsDown) override
     {
-        juce::Colour bgColour = juce::Colour(60, 60, 80);
+        juce::Colour bgColour = getLookAndFeel().findColour(colour_ids::buttonBackground);
         if (getToggleState())
-            bgColour = juce::Colour(30, 30, 60);// Set a different color for the "on" state
+            bgColour = getLookAndFeel().findColour(colour_ids::buttonDownBackground);// Set a different color for the "on" state
         if (isMouseOver())
-            bgColour = juce::Colour(40, 40, 50);
+            bgColour = getLookAndFeel().findColour(colour_ids::buttonHoverBackground);
         g.setColour(bgColour);
         
         g.fillEllipse(getLocalBounds().toFloat());
         if(getToggleState())
-            g.setColour(juce::Colours::yellow);
+            g.setColour(getLookAndFeel().findColour(colour_ids::buttonAccent));
         else
-            g.setColour(juce::Colours::white);
+            g.setColour(getLookAndFeel().findColour(juce::Label::textColourId));
         
         g.drawEllipse(getLocalBounds().toFloat().reduced(4), 2.f);
         
@@ -147,10 +159,16 @@ public:
 
 struct AttachedButton
 {
-    AttachedButton(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& label) :
+    AttachedButton(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, const juce::String& label, juce::LookAndFeel_V4* custom_lnf=nullptr) :
         button(label),
         attachment(*apvts.getParameter(iD), button, nullptr)
     {
+        if(custom_lnf)
+            button.setLookAndFeel(custom_lnf);
+    }
+    ~AttachedButton()
+    {
+        button.setLookAndFeel(nullptr);
     }
     ToggleButtonWithText button;
     juce::ButtonParameterAttachment attachment;
@@ -158,10 +176,16 @@ struct AttachedButton
 
 struct AttachedOnOffButton
 {
-    AttachedOnOffButton(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD) :
+    AttachedOnOffButton(juce::AudioProcessorValueTreeState& apvts, const juce::String& iD, juce::LookAndFeel_V4* custom_lnf=nullptr) :
         button(),
         attachment(*apvts.getParameter(iD), button, nullptr)
     {
+        if(custom_lnf)
+            button.setLookAndFeel(custom_lnf);
+    }
+    ~AttachedOnOffButton()
+    {
+        button.setLookAndFeel(nullptr);
     }
     OnOffButton button;
     juce::ButtonParameterAttachment attachment;

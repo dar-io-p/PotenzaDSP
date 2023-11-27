@@ -16,10 +16,13 @@ public:
         auto w = bounds.getWidth();
         auto h = bounds.getHeight();
         juce::Path p;
-        p.startNewSubPath(0, h);
         envelope.gate(true);
         int sustainCount = 0;
-        for (int x = 0; x < w; x++)
+        
+        auto pad = 10;
+        
+        p.startNewSubPath(pad, h - pad);
+        for (int x = pad; x < w - pad; x++)
         {
             if (envelope.getState() == SubSynth::Envelope::Sustain)
             {
@@ -27,7 +30,7 @@ public:
             }
             if (sustainCount > 100)
                 envelope.gate(false);
-            auto y = h - h * envelope.getNextValue();
+            auto y = juce::jmap(envelope.getNextValue(), 0.f, 1.f, (float) h - pad, (float) pad);
             p.lineTo(x, y);
         }
         g.setColour(juce::Colours::white);

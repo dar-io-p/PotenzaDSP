@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "ptnz_gui/ptnz_gui.h"
 #include "WaveShaperDisplay.h"
+#include "SimpleSubLookAndFeel.h"
 
 //==============================================================================
 /*
@@ -21,12 +22,12 @@ class DistortionPanel  : public juce::Component
 {
 public:
     DistortionPanel(juce::AudioProcessorValueTreeState& apvts) :
-    cubicButton("CUBIC"),
-    tanhButton("TANH"),
-    sinButton("SINE"),
-    isActiveButton(apvts, param::toID(param::param_distortionIsActive)),
+    cubicButton("CUBIC", &lnf),
+    tanhButton("TANH", &lnf),
+    sinButton("SINE", &lnf),
+    isActiveButton(apvts, param::toID(param::param_distortionIsActive), &lnf),
     wsd(),
-    driveSlider(apvts, param::toID(param::param_drive), param::toName(param::param_drive))
+    driveSlider(apvts, param::toID(param::param_drive), param::toName(param::param_drive), &lnf)
     {
         type = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(param::toID(param::param_distorionType)));
         jassert(type != nullptr);
@@ -92,7 +93,7 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setColour(juce::Colours::white);
+        g.setColour(lnf.findColour(juce::Label::textColourId));
         g.setFont(juce::Font(17.f));
         g.drawFittedText("DRIVE", driveSlider.slider.getX(), 0, driveSlider.slider.getWidth(), 30, juce::Justification::centred ,1);
         //g.drawRoundedRectangle(wsd.getBounds().toFloat(), 2.f, 2.f);
@@ -127,6 +128,8 @@ public:
     }
 
 private:
+    SimpleSubLookAndFeel lnf;
+
     juce::AudioParameterChoice* type;
     
     ptnz_gui::ToggleButtonWithText cubicButton;
@@ -138,5 +141,6 @@ private:
     WaveShaperDisplay wsd;
     
     ptnz_gui::AttachedSlider driveSlider;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPanel)
 };

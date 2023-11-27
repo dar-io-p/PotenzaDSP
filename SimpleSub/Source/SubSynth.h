@@ -21,8 +21,9 @@ public:
     void prepare (const juce::dsp::ProcessSpec& spec)
     {
         tempBlock = juce::dsp::AudioBlock<float> (heapBlock, spec.numChannels, spec.maximumBlockSize);
-
+        
         processorChain.prepare(spec);
+        reset();
     }
     //==============================================================================
     template <typename ProcessContext>
@@ -106,8 +107,8 @@ public:
     }
     void setWidth(float w)
     {
-        auto rateL =     juce::jmap  (w,     0.f,    1.f,    0.5f,   3.f);
-        auto rateR =     juce::jmap  (w,     0.f,    1.f,    0.5f,   4.f);
+        auto rateL =    juce::jmap  (w,     0.f,    1.f,    0.5f,   3.f);
+        auto rateR =    juce::jmap  (w,     0.f,    1.f,    0.5f,   4.f);
         auto depth =    juce::jmap  (w,     0.f,    1.f,    0.f,    0.25f);
         auto delayL =   juce::jmap  (w,     0.f,    1.f,    5.f,    7.f);
         auto delayR =   juce::jmap  (w,     0.f,    1.f,    5.5f,   9.f);
@@ -136,9 +137,11 @@ public:
         mainChain.prepare(spec);
         
         harmonicChain.prepare(spec);
-        velocityGain.setRampDurationSeconds(0);
         
         velocityGain.prepare(spec);
+        velocityGain.setRampDurationSeconds(0);
+        
+        reset();
     }
     
     template <typename ProcessContext>
@@ -373,9 +376,6 @@ public:
     Distortion()
     {
         drive.setRampDurationSeconds(0.05);
-        waveShapers[param::CubicAlgo].functionToUse = param::getWaveShaper(param::CubicAlgo);
-        waveShapers[param::TanhAlgo].functionToUse = param::getWaveShaper(param::TanhAlgo);
-        waveShapers[param::SinAlgo].functionToUse = param::getWaveShaper(param::SinAlgo);
     }
     
     void update(float driveDB, int algorithmIndex, bool isActive)
@@ -383,6 +383,7 @@ public:
         if (currentIndex != algorithmIndex)
         {
             currentIndex = algorithmIndex;
+            waveShaper.functionToUse = param::getWaveShaper((param::distortionIndices)currentIndex);
             reset();
         }
         drive.setGainDecibels(driveDB);
@@ -393,7 +394,7 @@ public:
     void reset()
     {
         drive.reset();
-        waveShapers[currentIndex].reset();
+        waveShaper.reset();
     }
     
     //==============================================================================
@@ -402,23 +403,23 @@ public:
     {
         if(bypass) return;
         drive.process(context);
-        waveShapers[currentIndex].process(context);
+        waveShaper.process(context);
     }
     
     //==============================================================================
     void prepare (const juce::dsp::ProcessSpec& spec)
     {
-        for (auto& ws : waveShapers)
-            ws.prepare(spec);
+        waveShaper.prepare(spec);
         drive.prepare(spec);
+        reset();
     }
     
 private:
     bool bypass = false;
-    int currentIndex = 0;
+    int currentIndex = -1;
     
     juce::dsp::Gain<float> drive;
-    std::array<juce::dsp::WaveShaper<float, std::function<float(float)>>, 4> waveShapers;
+    juce::dsp::WaveShaper<float, std::function<float(float)>> waveShaper;
     //==============================================================================
 };
 
@@ -525,7 +526,7 @@ public:
     void noteStarted() override
     {
         const auto noteToStart = getCurrentlyPlayingNote();
-        
+        float freqHz = noteToStart.getFrequencyInHertz();
         auto velocity = 1.0f;//noteToStart.noteOnVelocity.asUnsignedFloat();
         
         auto& osc = processorChain.get<oscIndex>();
@@ -533,7 +534,7 @@ public:
         
         noteSmoother.reset(glideParam->get() * 100);
         
-        //noteSmoother.setTargetValue(freqHz);
+        noteSmoother.setTargetValue(freqHz);
         int noteValue = noteToStart.initialNote;
         noteStack.push(noteValue);
         
