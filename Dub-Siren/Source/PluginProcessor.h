@@ -9,7 +9,8 @@
 #pragma once
 
 #include <JuceHeader.h>
-
+#include "Parameters.h"
+#include "Siren.h"
 //==============================================================================
 /**
 */
@@ -52,8 +53,11 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    float getLFOValue() { return siren.getLFOValue(); }
+    
+    juce::AudioProcessorValueTreeState apvts;
 private:
-    //==============================================================================
+    Siren siren;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DubSirenAudioProcessor)
 };
