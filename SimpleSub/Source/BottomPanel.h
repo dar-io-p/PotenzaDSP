@@ -14,6 +14,7 @@
 #include "ptnz_gui/ptnz_gui.h"
 #include "Parameters.h"
 #include "SimpleSubLookAndFeel.h"
+#include "HarmonicBox.h"
 //==============================================================================
 /*
 */
@@ -22,17 +23,19 @@ class BottomPanel  : public juce::Component
 public:
     BottomPanel(juce::AudioProcessorValueTreeState& apvts) :
     outGainSlider(apvts, param::toID(param::param_out_gain), param::toName(param::param_out_gain), &lnf),
-    widthSlider(apvts, param::toID(param::param_width), param::toName(param::param_width), &lnf)
+    glideSlider(apvts, param::toID(param::param_glide), param::toName(param::param_width), &lnf),
+    glideActiveButton(apvts, param::toID(param::param_glide_active), &lnf),
+    hBox(apvts)
     {
-        for (auto i = 0; i < 5; i++) {
-            param::PID pid = (param::PID) (param::param_harmonic_1 + i);
-            jassert(pid < param::TotalNumParams);
-            harmonicSliders[i] = std::make_unique<ptnz_gui::AttachedSliderVertical>(apvts, param::toID(pid), param::toName(pid), &lnf);
-            addAndMakeVisible(harmonicSliders[i]->slider);
-        }
-        
+
         addAndMakeVisible(outGainSlider.slider);
-        addAndMakeVisible(widthSlider.slider);
+        addAndMakeVisible(glideSlider.slider);
+        
+        addAndMakeVisible(glideActiveButton.button);
+        
+        addAndMakeVisible(hBox);
+        
+        glideActiveButton.button.onClick = [this] () {repaint();};
     }
 
     ~BottomPanel() override
@@ -41,10 +44,20 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setColour(lnf.findColour(juce::Label::textColourId));
-        g.setFont(juce::Font(17.f));
-        g.drawFittedText("WIDTH", widthSlider.slider.getX(), 0, widthSlider.slider.getWidth(), 30, juce::Justification::centred, 1);
-        g.drawFittedText("OUT", outGainSlider.slider.getX(), 0, outGainSlider.slider.getWidth(), 30, juce::Justification::centred, 1);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
+        g.setFont(ptnz_gui::styles::getTitleFont());
+        
+        g.drawFittedText("Harmonics", hBox.getX(), hBox.getY() - 23 , hBox.getWidth(), 20, juce::Justification::centred, 1);
+        
+        drawSliderTitle(g, outGainSlider.slider, "OUT");
+        
+        if(!glideActiveButton.button.getToggleState()) g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.2f));
+        drawSliderTitle(g, glideSlider.slider, "GLIDE");
+        
+        
+        const auto bounds = getLocalBounds().toFloat();
+        drawDivider(g, bounds, (int)(0.5f * getWidth()));
+        drawDivider(g, bounds, (int)(0.75f * getWidth()));
     }
 
     void resized() override
@@ -52,29 +65,29 @@ public:
         auto bounds = getLocalBounds();
         auto w = bounds.getWidth();
         
-        auto harmonicBounds = bounds.removeFromLeft(w / 2).reduced(10, 5);
-        auto delta = harmonicBounds.getWidth() / 5;
+        auto harmonicBounds = bounds.removeFromLeft(w / 2).reduced(10, 10);
+        harmonicBounds.removeFromTop(15);
         
-        for (auto& s : harmonicSliders)
-        {
-            s->slider.setBounds(harmonicBounds.removeFromLeft(delta).reduced(4, 0));
-        }
+        hBox.setBounds(harmonicBounds);
         
-        bounds.removeFromTop(20);
+        auto buttonRect = juce::Rectangle<int>(bounds.getX() + 8, 8 , 20, 20);
+
+        auto glideBounds = bounds.removeFromLeft(w / 4);
+        placeSlider(glideSlider.slider, glideBounds);
         
-        widthSlider.slider.setBounds(bounds.removeFromLeft(w / 4).reduced(30, 0));
-        outGainSlider.slider.setBounds(bounds.reduced(30, 0));
+        placeSlider(outGainSlider.slider, bounds);
+        
+        glideActiveButton.button.setBounds(buttonRect);
     }
 
 private:
     SimpleSubLookAndFeel lnf;
 
     ptnz_gui::AttachedSlider outGainSlider;
-    ptnz_gui::AttachedSlider widthSlider;
+    ptnz_gui::AttachedSlider glideSlider;
+    ptnz_gui::AttachedOnOffButton glideActiveButton;
     
-    using uniqueSlider = std::unique_ptr<ptnz_gui::AttachedSliderVertical>;
-    std::array<uniqueSlider, 5> harmonicSliders;
-    
+    HarmonicBox hBox;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BottomPanel)
 };

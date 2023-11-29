@@ -13,7 +13,8 @@
       <FILE id="i2sg0F" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
       <FILE id="Vm5tQP" name="EnvelopeViewer.h" compile="0" resource="0"
             file="Source/EnvelopeViewer.h"/>
-      <FILE id="nEGIi6" name="GlidePanel.h" compile="0" resource="0" file="Source/GlidePanel.h"/>
+      <FILE id="Z45Vrq" name="HarmonicBox.h" compile="0" resource="0" file="Source/HarmonicBox.h"/>
+      <FILE id="AxKyAE" name="MiddlePanel.h" compile="0" resource="0" file="Source/MiddlePanel.h"/>
       <FILE id="dphnLi" name="SimpleSubLookAndFeel.h" compile="0" resource="0"
             file="Source/SimpleSubLookAndFeel.h"/>
       <FILE id="Kovsd5" name="WaveShaperDisplay.h" compile="0" resource="0"

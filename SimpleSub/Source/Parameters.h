@@ -141,13 +141,23 @@ inline ValToStr percent(){
     
 inline ValToStr generic(){
     return [](float value, int maxLen){
-        return String(value, 2);
+        if (value < 10.f)
+            return String(value, 2);
+        else if (value < 100.f)
+            return String(value, 1);
+        else
+            return String((int)value);
     };
 }
 
 inline ValToStr mS() {
     return [](float value, int maxLen){
-        return String(value, 1) + " mS";
+        if (value < 10.f)
+            return String(value, 2) + " ms";
+        else if (value < 100.f)
+            return String(value, 1) + " ms";
+        else
+            return String((int)value) + " ms";
     };
 }
 
@@ -229,13 +239,13 @@ inline Layout createParamterLayout()
 {
     UniqueRAPVector params;
     
-    createParamFloat(params, param_attack, 0, 2000, 5, valToStr::mS(), strToVal::mS(), 100);
-    createParamFloat(params, param_decay, 0, 2000, 100, valToStr::mS(), strToVal::mS(), 100);
-    createParamFloat(params, param_sustain, -100, 0, 0, valToStr::db(), strToVal::db(), -12);
-    createParamFloat(params, param_release, 0, 2000, 5, valToStr::mS(), strToVal::mS(), 100);
+    createParamFloat(params, param_attack, 0, 2000, 5, valToStr::generic(), strToVal::generic(), 100);
+    createParamFloat(params, param_decay, 0, 2000, 100, valToStr::generic(), strToVal::generic(), 100);
+    createParamFloat(params, param_sustain, -100, 0, 0, valToStr::generic(), strToVal::generic(), -12);
+    createParamFloat(params, param_release, 0, 2000, 5, valToStr::generic(), strToVal::generic(), 100);
     
-    createParamFloat(params, param_A_curve, 0, 100, 50, valToStr::generic(), strToVal::generic(), 10);
-    createParamFloat(params, param_DR_curve, 0, 100, 50, valToStr::generic(), strToVal::generic(), 10);
+    createParamFloat(params, param_A_curve, 0, 50, 50, valToStr::generic(), strToVal::generic(), 1);
+    createParamFloat(params, param_DR_curve, 0, 50, 50, valToStr::generic(), strToVal::generic(), 1);
     
     createParamFloat(params, param_drive, -24, 24, -12, valToStr::db(), strToVal::db(), 0);
     createParamFloat(params, param_out_gain, -100, 12, -12, valToStr::db(), strToVal::db(), 0);

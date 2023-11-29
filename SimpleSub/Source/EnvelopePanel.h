@@ -13,45 +13,25 @@ class EnvelopePanel  : public juce::Component
 {
 public:
     EnvelopePanel(juce::AudioProcessorValueTreeState& apvts) :
-    attackSlider(apvts, param::toID(param::param_attack), param::toName(param::param_attack), &lnf),
-    decaySlider(apvts, param::toID(param::param_decay), param::toName(param::param_decay), &lnf),
-    sustainSlider(apvts, param::toID(param::param_sustain), param::toName(param::param_sustain), &lnf),
-    releaseSlider(apvts, param::toID(param::param_release), param::toName(param::param_release), &lnf),
     curve_A_slider(apvts, param::toID(param::param_A_curve), param::toName(param::param_A_curve), &lnf),
-    curve_DR_slider(apvts, param::toID(param::param_DR_curve), param::toName(param::param_DR_curve), &lnf)
+    curve_DR_slider(apvts, param::toID(param::param_DR_curve), param::toName(param::param_DR_curve), &lnf),
+    envelopeViewer(apvts)
     {
-        attackParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_attack)));
-        decayParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_decay)));
-        sustainParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_sustain)));
-        releaseParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_release)));
-        attackCurveParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_A_curve)));
-        releaseCurveParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(param::toID(param::param_DR_curve)));
-        
-        auto valChanged = [this] () {
-            envelopeViewer.update(attackParam->get(), decayParam->get(), sustainParam->get(), releaseParam->get(), attackCurveParam->get(), releaseCurveParam->get());
-            envelopeViewer.repaint();
-        };
-        
-        addAndMakeVisible(attackSlider.slider);
-        attackSlider.slider.onValueChange = valChanged;
-        
-        addAndMakeVisible(decaySlider.slider);
-        decaySlider.slider.onValueChange = valChanged;
-        
-        addAndMakeVisible(sustainSlider.slider);
-        sustainSlider.slider.onValueChange = valChanged;
-        
-        addAndMakeVisible(releaseSlider.slider);
-        releaseSlider.slider.onValueChange = valChanged;
-        
         addAndMakeVisible(curve_A_slider.slider);
-        curve_A_slider.slider.onValueChange = valChanged;
-        
         addAndMakeVisible(curve_DR_slider.slider);
-        curve_DR_slider.slider.onValueChange = valChanged;
         
         addAndMakeVisible(envelopeViewer);
-        valChanged();
+        
+        curve_A_slider.slider.onValueChange = [this] () {
+            envelopeViewer.set_a_curve(curve_A_slider.slider.getValue());
+        };
+        
+        curve_DR_slider.slider.onValueChange = [this] () {
+            envelopeViewer.set_dr_curve(curve_DR_slider.slider.getValue());
+        };
+        
+        envelopeViewer.set_a_curve(curve_A_slider.slider.getValue());
+        envelopeViewer.set_dr_curve(curve_DR_slider.slider.getValue());
     }
 
     ~EnvelopePanel() override
@@ -60,17 +40,17 @@ public:
 
     void paint (juce::Graphics& g) override
     {
-        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
-        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(6, 6).toFloat(), 8.f);
-        g.setColour(lnf.findColour(ptnz_gui::colour_ids::secondaryBackground));
-        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(2, 2).toFloat(), 8.f);
+//        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
+//        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(6, 6).toFloat(), 8.f);
+//        g.setColour(lnf.findColour(ptnz_gui::colour_ids::secondaryBackground));
+//        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(2, 2).toFloat(), 8.f);
         
-        g.setColour(lnf.findColour(juce::Label::textColourId));
-        g.setFont(juce::Font(12.f));
-        g.drawFittedText("A", attackSlider.slider.getBounds(), juce::Justification::topLeft, 1);
-        g.drawFittedText("D", decaySlider.slider.getBounds(), juce::Justification::topLeft, 1);
-        g.drawFittedText("S", sustainSlider.slider.getBounds(), juce::Justification::topLeft, 1);
-        g.drawFittedText("R", releaseSlider.slider.getBounds(), juce::Justification::topLeft, 1);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.6f));
+        g.setFont(ptnz_gui::styles::getPlainFont());
+        g.drawFittedText("A CURVE", curve_A_slider.slider.getX(), curve_A_slider.slider.getY() - 20, curve_A_slider.slider.getWidth(), 20, juce::Justification::centred, 1);
+        g.drawFittedText("D/R CURVE", curve_DR_slider.slider.getX(), curve_DR_slider.slider.getY() - 20, curve_DR_slider.slider.getWidth(), 20, juce::Justification::centred, 1);
+        
+        drawDivider(g, getLocalBounds().toFloat(), (float)envelopeViewer.getRight() + 5.f);
     }
 
     void resized() override
@@ -79,43 +59,24 @@ public:
         auto w = bounds.getWidth();
         auto h = bounds.getHeight();
         
-        envelopeViewer.setBounds(bounds.removeFromLeft(2 * w / 3).reduced(12, 12));
+        envelopeViewer.setBounds(bounds.removeFromLeft(5 * w / 6).reduced(5.f));
         
-        w = bounds.getWidth();
-        auto deltaX = w / 3;
-        auto deltaY = h / 2;
-        
-        auto topBounds = bounds.removeFromTop(deltaY);
-        
-        attackSlider.slider.setBounds(topBounds.removeFromLeft(deltaX));
-        sustainSlider.slider.setBounds(topBounds.removeFromLeft(deltaX));
-        curve_A_slider.slider.setBounds(topBounds);
+        auto sliderHeight = 60;
+        auto topBounds = bounds.removeFromTop(h / 2);
+        bounds.removeFromBottom(5);
+        curve_A_slider.slider.setBounds(topBounds.removeFromBottom(sliderHeight));
 
-        decaySlider.slider.setBounds(bounds.removeFromLeft(deltaX));
-        releaseSlider.slider.setBounds(bounds.removeFromLeft(deltaX));
-        curve_DR_slider.slider.setBounds(bounds);
+        curve_DR_slider.slider.setBounds(bounds.removeFromBottom(sliderHeight));
     }
 
 private:
     SimpleSubLookAndFeel lnf;
-
-    ptnz_gui::AttachedSlider attackSlider;
-    ptnz_gui::AttachedSlider decaySlider;
-    ptnz_gui::AttachedSlider sustainSlider;
-    ptnz_gui::AttachedSlider releaseSlider;
     
     ptnz_gui::AttachedSlider curve_A_slider;
     ptnz_gui::AttachedSlider curve_DR_slider;
     
-    juce::AudioParameterFloat* attackParam;
-    juce::AudioParameterFloat* decayParam;
-    juce::AudioParameterFloat* sustainParam;
-    juce::AudioParameterFloat* releaseParam;
-    juce::AudioParameterFloat* attackCurveParam;
-    juce::AudioParameterFloat* releaseCurveParam;
-    
     EnvelopeViewer envelopeViewer;
-    
+
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopePanel)
 };

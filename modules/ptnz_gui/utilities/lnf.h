@@ -22,6 +22,16 @@ enum colour_ids
     white,
 };
 
+namespace styles
+{
+    //const juce::Font labelFont  = juce::Font("Futura", 14.f, juce::Font::plain);
+inline juce::Font getLabelFont()     { return juce::Font("Futura", 14.f, juce::Font::plain); }
+inline juce::Font getTitleFont()     { return juce::Font("Futura", 16.f, juce::Font::plain); }
+inline juce::Font getPlainFont()     { return juce::Font("Futura", 13.f, juce::Font::plain); }
+inline juce::Font getBigTitleFont()  { return juce::Font("Futura", 25.f, juce::Font::bold); }
+
+}
+
 class LNF : public juce::LookAndFeel_V4
 {
 public:
@@ -51,7 +61,7 @@ public:
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
                            const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) override
     {
-        auto radius = (float) juce::jmin (width / 2, height / 2) * 0.7f;
+        auto radius = (float) juce::jmin (width / 2, height / 2) * 0.8f;
         auto centreX = (float) x + (float) width * 0.5f;
         auto centreY = (float) y + (float) height * 0.5f;
         auto rx = centreX - radius;
@@ -71,16 +81,16 @@ public:
         g.strokePath(arc, juce::PathStrokeType(3.5f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
     
         arc.clear();
-        arc.addCentredArc(centreX, centreY, radius * 0.8f, radius * 0.8f, 0.f, rotaryStartAngle, juce::jmax(angle - spacing - 0.05f, rotaryStartAngle), true);
+        arc.addCentredArc(centreX, centreY, radius * 0.7f, radius * 0.7f, 0.f, rotaryStartAngle, juce::jmax(angle - spacing - 0.05f, rotaryStartAngle), true);
         
         //draw Partially filled arc
         g.setColour (findColour(colour_ids::accent));
-        g.strokePath(arc, juce::PathStrokeType(3.f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
+        g.strokePath(arc, juce::PathStrokeType(4.f, juce::PathStrokeType::curved, juce::PathStrokeType::rounded));
         
         //POINTER
         juce::Path p;
         auto pointerLength = radius * 0.33f;
-        auto pointerThickness = 4.0f;
+        auto pointerThickness = 3.0f;
         //p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
         p.addLineSegment(juce::Line<float>(0, -radius, 0, -radius + pointerLength), 1.f);
         p.applyTransform(juce::AffineTransform::rotation(angle).translated(centreX, centreY));
@@ -98,21 +108,35 @@ public:
     void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
         g.setColour(findColour(juce::Label::textColourId));
-        g.setFont(label.getHeight() * 0.8);
+        g.setFont(styles::getLabelFont());
         g.drawFittedText(label.getText(), label.getLocalBounds(), juce::Justification::centred, 1);
         
-        g.setColour(findColour(colour_ids::accent));
-        //g.drawRoundedRectangle(label.getLocalBounds().toFloat().reduced(2.f), 5.f, 2.f);
+        //g.setColour(findColour(colour_ids::accent));
+        //g.drawRoundedRectangle(label.getLocalBounds().toFloat(), 2.f, 1.f);
     }
     
     juce::Slider::SliderLayout getSliderLayout(juce::Slider& slider) override
     {
         juce::Rectangle<int> sliderBounds = slider.getLocalBounds();
+        
+
 
         if(slider.getTextBoxPosition() == juce::Slider::TextBoxBelow)
         {
-            juce::Rectangle<int> textBounds = sliderBounds.removeFromBottom(slider.getHeight() / 5);
-            return { sliderBounds, textBounds };
+            auto textBoxHeight = 17.f;
+            
+            auto w = sliderBounds.getWidth();
+            auto h = sliderBounds.getHeight();
+            auto dim = 0;
+            if (h > w)
+                dim = sliderBounds.getWidth() + textBoxHeight;
+            else
+                dim = sliderBounds.getHeight();
+            
+            auto newBounds = juce::Rectangle<int>(0, 0, dim, dim).withCentre(sliderBounds.getCentre());
+            
+            juce::Rectangle<int> textBounds = newBounds.removeFromBottom(textBoxHeight);
+            return { newBounds, textBounds };
         }
 
         return { sliderBounds, {} };

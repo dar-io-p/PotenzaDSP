@@ -14,7 +14,7 @@
 #include "EnvelopePanel.h"
 #include "BottomPanel.h"
 #include "DistortionPanel.h"
-#include "GlidePanel.h"
+#include "MiddlePanel.h"
 
 #include "SimpleSubLookAndFeel.h"
 
@@ -34,9 +34,12 @@ private:
     SimpleSubLookAndFeel lnf;
     SimpleSubAudioProcessor& audioProcessor;
     EnvelopePanel envPanel;
+    MiddlePanel middlePanel;
     BottomPanel bottomPanel;
-    DistortionPanel distPanel;
-    GlidePanel glidePanel;
+    
+    const int bannerSize = 30;
+    //DistortionPanel distPanel;
+    //GlidePanel glidePanel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleSubAudioProcessorEditor)
 };

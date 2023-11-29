@@ -111,15 +111,7 @@ public:
         }
         
         g.setColour(getLookAndFeel().findColour(juce::TextButton::textColourOnId));
-        auto h = getHeight();
-        if (h > 50){
-            g.setFont(20.f);
-        }else if (h > 30) {
-            g.setFont(13.f);
-        }
-        else{
-            g.setFont(11.f);
-        }
+        g.setFont(styles::getLabelFont());
         g.drawFittedText(getButtonText(), getLocalBounds(), juce::Justification::centred, 1);
     }
     Shape getShape() {return shape;}
@@ -149,11 +141,12 @@ public:
         else
             g.setColour(getLookAndFeel().findColour(juce::Label::textColourId));
         
-        g.drawEllipse(getLocalBounds().toFloat().reduced(4), 2.f);
+        auto bounds = getLocalBounds().toFloat();
+        g.drawEllipse(bounds.withSizeKeepingCentre(9, 9), 2.f);
         
-        auto rect = juce::Rectangle<int>(2, getHeight() / 4);
-        g.drawRect(rect.withCentre(getLocalBounds().getCentre()));
-        g.setColour(juce::Colours::whitesmoke);
+        //auto rect = juce::Rectangle<int>(2, getHeight() / 5);
+        //g.drawRect(rect.withCentre(getLocalBounds().getCentre()));
+        //g.setColour(juce::Colours::whitesmoke);
     }
 };
 
