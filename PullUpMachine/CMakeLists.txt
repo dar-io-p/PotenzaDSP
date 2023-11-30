@@ -81,7 +81,7 @@ juce_generate_juce_header(PullUpMachine)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
-target_compile_features("${PROJECT_NAME}" INTERFACE cxx_std_20)
+target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 
 # Manually list all .h and .cpp files for the plugin
 # If you are like me, you'll use globs for your sanity.
@@ -89,7 +89,7 @@ target_compile_features("${PROJECT_NAME}" INTERFACE cxx_std_20)
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 # set(SourceFiles Source/PluginEditor.h Source/PluginProcessor.h Source/PluginEditor.cpp Source/PluginProcessor.cpp)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
-target_sources("${PROJECT_NAME}" INTERFACE ${SourceFiles})
+target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
 include(Assets)
@@ -99,7 +99,7 @@ include(XcodePrettify)
 
 # This is where you can set preprocessor definitions for JUCE and your plugin
 target_compile_definitions("${PROJECT_NAME}"
-    INTERFACE
+    PUBLIC
 
     # JUCE_WEB_BROWSER and JUCE_USE_CURL off by default
     JUCE_WEB_BROWSER=0  # If you set this to 1, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
@@ -124,16 +124,17 @@ target_compile_definitions("${PROJECT_NAME}"
 # This allows the JUCE plugin targets and the Tests target to link against it
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
-    Assets
-    ptnz_gui
-    juce_audio_utils
-    juce_audio_processors
-    juce_dsp
-    juce_gui_basics
-    juce_gui_extra
-    juce::juce_recommended_config_flags
-    juce::juce_recommended_lto_flags
-    juce::juce_recommended_warning_flags)
+        Assets
+        ptnz_gui
+    PUBLIC  
+        juce_audio_utils
+        juce_audio_processors
+        juce_dsp
+        juce_gui_basics
+        juce_gui_extra
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags)
 
 # Link the JUCE plugin targets our SharedCode target
 # target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode)
