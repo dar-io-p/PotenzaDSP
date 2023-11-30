@@ -77,7 +77,7 @@ juce_generate_juce_header(PullUpMachine)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
-add_library(SharedCode INTERFACE)
+add_library(SharedCode PRIVATE)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
@@ -123,7 +123,9 @@ target_compile_definitions(SharedCode
 # However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
 # This allows the JUCE plugin targets and the Tests target to link against it
 target_link_libraries(SharedCode
-    INTERFACE
+    PRIVATE
+    Assets
+    ptnz_gui
     juce_audio_utils
     juce_audio_processors
     juce_dsp
