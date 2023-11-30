@@ -12,13 +12,14 @@
 
 #include <JuceHeader.h>
 #include "CircularBuffer.h"
+#include "WheelUpLookAndFeel.h"
 
 class BufferView  : public juce::Component, public juce::Timer
 {
 public:
     BufferView(CircularBuffer& bufferToUse) : buffer(bufferToUse)
     {
-        startTimerHz(24);
+        startTimerHz(30);
     }
 
     ~BufferView() override
@@ -29,11 +30,11 @@ public:
     void paint (juce::Graphics& g) override
     {
 
-        g.fillAll (juce::Colours::black);   // clear the background
+        //g.fillAll (juce::Colours::black);   // clear the background
 
-        g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+        //g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
-        g.setColour(juce::Colours::white);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
         plot(g);
     }
 
@@ -44,6 +45,7 @@ public:
     }
 
 private:
+    WheelUpLookAndFeel lnf;
     CircularBuffer& buffer;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BufferView)
     
@@ -76,8 +78,9 @@ private:
         
         float index = juce::jmap(buffer.getIndex(), 0.0f, static_cast<float> (buffer.getBufferLength()), 0.0f, W);
         
-        g.setColour(juce::Colours::red);
-        g.drawVerticalLine(index, 0.0f, H);
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::accent));
+        g.drawVerticalLine(index, 5.f, H - 5.f);
+        g.drawLine(index, 5.f, index, H - 5.f, 2.f);
     }
     
     void timerCallback() override

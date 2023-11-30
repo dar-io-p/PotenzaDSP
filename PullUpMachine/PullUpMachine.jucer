@@ -16,8 +16,9 @@
     <GROUP id="{D0A5C404-1737-D869-482A-5892316286E9}" name="utils">
       <FILE id="KUFKFR" name="CircularBuffer.h" compile="0" resource="0"
             file="Source/CircularBuffer.h"/>
-      <FILE id="LhYRnY" name="LNF.h" compile="0" resource="0" file="Source/LNF.h"/>
       <FILE id="oBvCtF" name="Params.h" compile="0" resource="0" file="Source/Params.h"/>
+      <FILE id="apvCiw" name="WheelUpLookAndFeel.h" compile="0" resource="0"
+            file="Source/WheelUpLookAndFeel.h"/>
     </GROUP>
     <GROUP id="{A042D32E-0501-E90C-BD90-811AF3AED7F7}" name="Source">
       <FILE id="M4sZHz" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -27,6 +28,11 @@
       <FILE id="HYU0Jg" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="jPm9uP" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{1E62FD1D-E214-E17C-E289-24396D1EF391}" name="assets">
+      <FILE id="pJ2grk" name="blue-vinyl.png" compile="0" resource="1" file="assets/blue-vinyl.png"/>
+      <FILE id="UgagMp" name="purple-vinyl.png" compile="0" resource="1"
+            file="assets/purple-vinyl.png"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

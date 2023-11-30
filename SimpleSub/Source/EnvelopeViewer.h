@@ -12,8 +12,6 @@ public:
     functionToUse(std::move(func)),
     attachment(param, [this] (float f) { setValue (f); })
     {
-        slider.addListener(this);
-        attachment.sendInitialUpdate();
         slider.valueFromTextFunction = [&param] (const juce::String& text) { return (double) param.convertFrom0to1 (param.getValueForText (text)); };
         slider.textFromValueFunction = [&param] (double value) { return param.getText (param.convertTo0to1 ((float) value), 0); };
         slider.setDoubleClickReturnValue (true, param.convertFrom0to1 (param.getDefaultValue()));
@@ -63,6 +61,11 @@ public:
         slider.addListener (this);
     }
     
+    ~EnvelopeAttachment()
+    {
+        slider.removeListener(this);
+    }
+    
     void setValue(float newValue)
     {
         functionToUse(newValue);
@@ -90,7 +93,6 @@ private:
     std::function<void(float)> functionToUse;
     juce::ParameterAttachment attachment;
     bool ignoreCallbacks = false;
-    //WaveShaperDisplay& viewer;
 };
 
 class EnvelopeSlider : public juce::Slider

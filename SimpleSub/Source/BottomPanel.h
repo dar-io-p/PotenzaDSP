@@ -70,11 +70,11 @@ public:
         
         hBox.setBounds(harmonicBounds);
         
-        auto buttonRect = juce::Rectangle<int>(bounds.getX() + 8, 8 , 20, 20);
-
         auto glideBounds = bounds.removeFromLeft(w / 4);
         placeSlider(glideSlider.slider, glideBounds);
-        
+
+        auto buttonRect = juce::Rectangle<int>(bounds.getX() - 28, 8 , 20, 20);
+
         placeSlider(outGainSlider.slider, bounds);
         
         glideActiveButton.button.setBounds(buttonRect);

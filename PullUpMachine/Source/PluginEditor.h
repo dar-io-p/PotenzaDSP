@@ -12,8 +12,8 @@
 #include "PluginProcessor.h"
 #include "WheelComponent.h"
 #include "BufferView.h"
-#include "LNF.h"
 #include "ptnz_gui/ptnz_gui.h"
+#include "WheelUpLookAndFeel.h"
 
 class PullUpMachineAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
@@ -26,6 +26,7 @@ public:
     void resized() override;
 
 private:
+    WheelUpLookAndFeel lnf;
     PullUpMachineAudioProcessor& audioProcessor;
     
     WheelComponent wheel;

@@ -76,6 +76,11 @@ public:
         attachment.sendInitialUpdate();
     }
     
+    ~ChoiceButtonParameterAttachment()
+    {
+        button.removeListener(this);
+    }
+    
     void setValue(float newValue)
     {
         //button.setToggleState(false, juce::NotificationType::dontSendNotification);

@@ -6,6 +6,7 @@ namespace ptnz_gui {
 
 using Slider = juce::Slider;
 using Attachment = juce::SliderParameterAttachment;
+using apvtsAttachment = juce::AudioProcessorValueTreeState::SliderAttachment;
 
 struct AttachedSlider
 {

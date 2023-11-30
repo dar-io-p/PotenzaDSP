@@ -123,7 +123,7 @@ public:
 
         if(slider.getTextBoxPosition() == juce::Slider::TextBoxBelow)
         {
-            auto textBoxHeight = 17.f;
+            auto textBoxHeight = 17;
             
             auto w = sliderBounds.getWidth();
             auto h = sliderBounds.getHeight();

@@ -6,12 +6,12 @@ PullUpMachineAudioProcessorEditor::PullUpMachineAudioProcessorEditor (PullUpMach
     AudioProcessorEditor (&p),
     audioProcessor (p),
     wheel(p),
-    trigger(p.apvts, param::toID(param::PID::Trigger),"PULL UP"),
-    direction(p.apvts, param::toID(param::PID::Direction), ""),
-    startSpeedSlider(p.apvts, param::toID(param::PID::StartSpeed), param::toName(param::PID::StartSpeed)),
-    durationSlider(p.apvts, param::toID(param::PID::Duration), param::toName(param::PID::Duration)),
-    bufferLengthSlider(p.apvts, param::toID(param::PID::BufferLength), param::toName(param::PID::BufferLength)),
-    powerSlider(p.apvts, param::toID(param::PID::Power), param::toName(param::PID::Power)),
+    trigger(p.apvts, param::toID(param::PID::Trigger),"PULL UP", &lnf),
+    direction(p.apvts, param::toID(param::PID::Direction), "", &lnf),
+    startSpeedSlider(p.apvts, param::toID(param::PID::StartSpeed), param::toName(param::PID::StartSpeed), &lnf),
+    durationSlider(p.apvts, param::toID(param::PID::Duration), param::toName(param::PID::Duration), &lnf),
+    bufferLengthSlider(p.apvts, param::toID(param::PID::BufferLength), param::toName(param::PID::BufferLength), &lnf),
+    powerSlider(p.apvts, param::toID(param::PID::Power), param::toName(param::PID::Power), &lnf),
     bufferView(p.getCircularBuffer())
 {
     setSize (340, 490);
@@ -51,24 +51,27 @@ PullUpMachineAudioProcessorEditor::~PullUpMachineAudioProcessorEditor()
 //==============================================================================
 void PullUpMachineAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::black);
+    g.fillAll(lnf.findColour(ptnz_gui::colour_ids::mainBackground));
+    
     auto x = 0;
     auto w = startSpeedSlider.slider.getWidth();
-    auto h = 20;
-    auto y = startSpeedSlider.slider.getY() - h;
-    g.setColour(juce::Colours::white);
-    g.setFont(juce::Font(12.f));
+    auto h = 40;
+    auto y = startSpeedSlider.slider.getY() - 30;
+    g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
+    g.setFont(ptnz_gui::styles::getPlainFont());
     
     g.drawFittedText("Start Speed", x, y, w, h, juce::Justification::centred, 2);
     x += w;
     g.drawFittedText("Duration (Bars)", x, y, w, h, juce::Justification::centred, 2);
     
     x = bufferLengthSlider.slider.getX();
-    g.drawFittedText("Buffer Length (Bars)", x, y, w, h, juce::Justification::centred, 2);
+    g.drawFittedText("Buffer Length \n(Bars)", x, y, w, h, juce::Justification::centred, 2);
     x += w;
     g.drawFittedText("Power", x, y, w, h, juce::Justification::centred, 2);
     
-    g.drawHorizontalLine(bufferView.getY()-4, 0, getWidth());
+    //g.drawHorizontalLine(bufferView.getY()-4, 0, getWidth());
+    g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.5f));
+    g.drawLine(bufferView.getX() + 15, bufferView.getY(), bufferView.getRight() - 15, bufferView.getY(), 2.0f);
 }
 
 void PullUpMachineAudioProcessorEditor::resized()

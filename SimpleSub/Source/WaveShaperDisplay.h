@@ -49,10 +49,10 @@ public:
         auto centre = bounds.toFloat().getCentre();
         const float dashLengths[2] = {4.f, 5.f};
         const int numDashLengths = 2;
-        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour));
+        g.setColour(lnf.findColour(ptnz_gui::colour_ids::outlineColour).withAlpha(0.5f));
         
-        g.drawDashedLine({0.f,              centre.getY(),          (float)bounds.getWidth(),   centre.getY()},             dashLengths, numDashLengths, 1.0f, 0);
-        g.drawDashedLine({centre.getX(),    (float)bounds.getY(),   centre.getX(),              (float)bounds.getBottom()}, dashLengths, numDashLengths, 1.0f, 0);
+        g.drawDashedLine({0.f,              centre.getY(),          (float)bounds.getWidth(),   centre.getY()},             dashLengths, numDashLengths, 2.0f, 0);
+        g.drawDashedLine({centre.getX(),    (float)bounds.getY(),   centre.getX(),              (float)bounds.getBottom()}, dashLengths, numDashLengths, 2.0f, 0);
 
         //Calculate and create path for waveshaper
         const auto startX = bounds.getX();
