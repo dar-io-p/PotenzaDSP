@@ -77,7 +77,7 @@ juce_generate_juce_header(PullUpMachine)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
-add_library(SharedCode PRIVATE)
+add_library(SharedCode)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
