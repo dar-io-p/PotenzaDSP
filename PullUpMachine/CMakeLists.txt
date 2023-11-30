@@ -46,7 +46,7 @@ include(JUCEDefaults)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JUCE juce_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
 # Add any other modules you want modules here, before the juce_add_plugin call
-# juce_add_module(modules/my_module)
+juce_add_module(modules/ptnz_gui)
 
 # See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
@@ -92,7 +92,7 @@ file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sou
 target_sources(SharedCode INTERFACE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
-# include(Assets)
+include(Assets)
 
 # MacOS only: Cleans up folder and target organization on Xcode.
 include(XcodePrettify)
@@ -134,7 +134,7 @@ target_link_libraries(SharedCode
     juce::juce_recommended_warning_flags)
 
 # Link the JUCE plugin targets our SharedCode target
-target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode ptnz_gui)
+target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode)
 
 # IPP support, comment out to disable
 # include(PamplejuceIPP)
