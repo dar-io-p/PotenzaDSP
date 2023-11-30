@@ -44,7 +44,7 @@ include(JUCEDefaults)
 # and later `git submodule update --remote --merge` to keep it up to date
 # On Github Actions, this is done as a part of actions/checkout
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JUCE juce_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
+# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
 # Add any other modules you want modules here, before the juce_add_plugin call
 juce_add_module(../modules/ptnz_gui)
 
