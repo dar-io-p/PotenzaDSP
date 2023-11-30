@@ -30,7 +30,6 @@
       <FILE id="jPm9uP" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
     <GROUP id="{1E62FD1D-E214-E17C-E289-24396D1EF391}" name="assets">
-      <FILE id="pJ2grk" name="blue-vinyl.png" compile="0" resource="1" file="assets/blue-vinyl.png"/>
       <FILE id="UgagMp" name="purple-vinyl.png" compile="0" resource="1"
             file="assets/purple-vinyl.png"/>
     </GROUP>
