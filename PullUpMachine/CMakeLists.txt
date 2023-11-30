@@ -44,9 +44,9 @@ include(JUCEDefaults)
 # and later `git submodule update --remote --merge` to keep it up to date
 # On Github Actions, this is done as a part of actions/checkout
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JUCE juce_build)
-# add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
+add_subdirectory(../modules modules_build)
 # Add any other modules you want modules here, before the juce_add_plugin call
-juce_add_module(../modules/ptnz_gui)
+# juce_add_module(../modules/ptnz_gui)
 
 # See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
@@ -77,7 +77,7 @@ juce_generate_juce_header(PullUpMachine)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
-add_library(SharedCode INTERFACE)
+# add_library(SharedCode INTERFACE)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
