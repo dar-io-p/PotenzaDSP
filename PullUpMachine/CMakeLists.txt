@@ -46,7 +46,7 @@ include(JUCEDefaults)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JUCE juce_build)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
 # Add any other modules you want modules here, before the juce_add_plugin call
-juce_add_module(modules/ptnz_gui)
+juce_add_module(${CMAKE_CURRENT_SOURCE_DIR}/../modules/ptnz_gui)
 
 # See `docs/CMake API.md` in the JUCE repo for all config options
 juce_add_plugin("${PROJECT_NAME}"
