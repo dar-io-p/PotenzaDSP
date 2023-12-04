@@ -30,14 +30,14 @@ set(BUNDLE_ID "com.PotenzaDSP.PullUpMachine")
 # Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
 set(FORMATS AU VST3)
 
-# For simplicity, the name of the CMake project is also the name of the target
-project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
-
 # Configures universal binaries in CI
 include(PamplejuceMacOS)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
+
+# For simplicity, the name of the CMake project is also the name of the target
+project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 
 # JUCE is setup as a submodule in the /JUCE folder
 # Locally, you must run `git submodule update --init --recursive` once
