@@ -13,3 +13,8 @@ PotenzaDSP JUCE Projects, gui library, etc.
 
 /JUCE  # JUCE added as a submodule, tracking develop.
 
+## Downloads
+
+To download the latest binaries, head to my website
+
+  www.PotenzaDSP.com
