@@ -81,7 +81,7 @@ target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 # set(SourceFiles Source/PluginEditor.h Source/PluginProcessor.h Source/PluginEditor.cpp Source/PluginProcessor.cpp)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
-target_sources("${PROJECT_NAME}" INTERFACE ${SourceFiles})
+target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
 # include(Assets)

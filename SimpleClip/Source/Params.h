@@ -126,7 +126,7 @@ namespace param {
      vts,
      stv
      ));
-    };
+    }
     
     inline Layout createParamterLayout()
     {

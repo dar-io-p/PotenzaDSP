@@ -81,7 +81,7 @@ target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 # set(SourceFiles Source/PluginEditor.h Source/PluginProcessor.h Source/PluginEditor.cpp Source/PluginProcessor.cpp)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
-target_sources("${PROJECT_NAME}" INTERFACE ${SourceFiles})
+target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
 include(Assets)
@@ -91,7 +91,7 @@ include(XcodePrettify)
 
 # This is where you can set preprocessor definitions for JUCE and your plugin
 target_compile_definitions("${PROJECT_NAME}"
-    INTERFACE
+    PUBLIC
 
     # JUCE_WEB_BROWSER and JUCE_USE_CURL off by default
     JUCE_WEB_BROWSER=0  # If you set this to 1, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
@@ -118,7 +118,7 @@ target_link_libraries("${PROJECT_NAME}"
     PRIVATE
         Assets
         ptnz_gui
-    INTERFACE
+    PUBLIC
         juce_audio_utils
         juce_audio_processors
         juce_dsp
