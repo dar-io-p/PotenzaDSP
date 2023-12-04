@@ -7,17 +7,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include (PamplejuceVersion)
 
 # Change me!
-# This is the internal name of the project and the name of JUCE's shared code "target"
-# Note: This cannot have spaces (it may be 2023, but you can't have it all!)
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is DAWs display)
 set(PROJECT_NAME "PullUpMachine")
 
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
-# You can also just have it be the same thing as PROJECT_NAME
-# You may want to append the major version on the end of this (and PROJECT_NAME) ala:
-#   set(PROJECT_NAME "PullUpMachine_v${MAJOR_VERSION}")
-# Doing so enables major versions to show up in IDEs and DAWs as separate plugins
-# allowing you to change parameters and behavior without breaking existing user projects
 set(PRODUCT_NAME "PullUpMachine")
 
 # Change me! Used for the MacOS bundle name and Installers

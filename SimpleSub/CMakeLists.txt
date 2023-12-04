@@ -3,21 +3,11 @@
 cmake_minimum_required(VERSION 3.24.1)
 
 # This tells cmake we have goodies in the /cmake folder
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include (PamplejuceVersion)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+include (PluginVersion)
 
 # Change me!
-# This is the internal name of the project and the name of JUCE's shared code "target"
-# Note: This cannot have spaces (it may be 2023, but you can't have it all!)
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is DAWs display)
 set(PROJECT_NAME "SimpleSub")
-
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
-# You can also just have it be the same thing as PROJECT_NAME
-# You may want to append the major version on the end of this (and PROJECT_NAME) ala:
-#   set(PROJECT_NAME "SimpleSub_v${MAJOR_VERSION}")
-# Doing so enables major versions to show up in IDEs and DAWs as separate plugins
-# allowing you to change parameters and behavior without breaking existing user projects
 set(PRODUCT_NAME "SimpleSub")
 
 # Change me! Used for the MacOS bundle name and Installers
@@ -31,7 +21,7 @@ set(BUNDLE_ID "com.PotenzaDSP.SimpleSub")
 set(FORMATS AU VST3)
 
 # Configures universal binaries in CI
-include(PamplejuceMacOS)
+include(MacOSConfig)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
@@ -43,8 +33,8 @@ project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 # Locally, you must run `git submodule update --init --recursive` once
 # and later `git submodule update --remote --merge` to keep it up to date
 # On Github Actions, this is done as a part of actions/checkout
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../JUCE juce_build)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../modules modules_build)
+add_subdirectory(../JUCE juce_build)
+add_subdirectory(../modules modules_build)
 # Add any other modules you want modules here, before the juce_add_plugin call
 # juce_add_module(modules/my_module)
 
@@ -56,11 +46,9 @@ juce_add_plugin("${PROJECT_NAME}"
     BUNDLE_ID "${BUNDLE_ID}"
 
     # On MacOS, plugin is copied to ~/Users/yourname/Library/Audio/Plug-Ins/
-    COPY_PLUGIN_AFTER_BUILD TRUE
+    COPY_PLUGIN_AFTER_BUILD FALSE
 
     # Change me!
-    # A four-character plugin id
-    # First character MUST be uppercase for AU formats
     PLUGIN_MANUFACTURER_CODE PTNZ
 
     # Change me!
@@ -81,11 +69,11 @@ juce_generate_juce_header(SimpleSub)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
-add_library(SharedCode INTERFACE)
+# add_library(SharedCode INTERFACE)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
-target_compile_features(SharedCode INTERFACE cxx_std_20)
+target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 
 # Manually list all .h and .cpp files for the plugin
 # If you are like me, you'll use globs for your sanity.
@@ -93,7 +81,7 @@ target_compile_features(SharedCode INTERFACE cxx_std_20)
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 # set(SourceFiles Source/PluginEditor.h Source/PluginProcessor.h Source/PluginEditor.cpp Source/PluginProcessor.cpp)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
-target_sources(SharedCode INTERFACE ${SourceFiles})
+target_sources("${PROJECT_NAME}" INTERFACE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
 # include(Assets)
@@ -102,8 +90,8 @@ target_sources(SharedCode INTERFACE ${SourceFiles})
 include(XcodePrettify)
 
 # This is where you can set preprocessor definitions for JUCE and your plugin
-target_compile_definitions(SharedCode
-    INTERFACE
+target_compile_definitions("${PROJECT_NAME}"
+    PUBLIC
 
     # JUCE_WEB_BROWSER and JUCE_USE_CURL off by default
     JUCE_WEB_BROWSER=0  # If you set this to 1, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
@@ -126,19 +114,18 @@ target_compile_definitions(SharedCode
 # See https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md#juce_add_module
 # However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
 # This allows the JUCE plugin targets and the Tests target to link against it
-target_link_libraries(SharedCode
-    INTERFACE
-    juce_audio_utils
-    juce_audio_processors
-    juce_dsp
-    juce_gui_basics
-    juce_gui_extra
-    juce::juce_recommended_config_flags
-    juce::juce_recommended_lto_flags
-    juce::juce_recommended_warning_flags)
-
-# Link the JUCE plugin targets our SharedCode target
-target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode ptnz_gui)
+target_link_libraries("${PROJECT_NAME}"
+    PRIVATE
+        ptnz_gui
+    PUBLIC
+        juce_audio_utils
+        juce_audio_processors
+        juce_dsp
+        juce_gui_basics
+        juce_gui_extra
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags)
 
 # IPP support, comment out to disable
 # include(PamplejuceIPP)
