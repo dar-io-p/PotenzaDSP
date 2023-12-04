@@ -3,8 +3,8 @@
 cmake_minimum_required(VERSION 3.24.1)
 
 # This tells cmake we have goodies in the /cmake folder
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include (PamplejuceVersion)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+include (PluginVersion)
 
 # Change me!
 set(PROJECT_NAME "PullUpMachine")
@@ -22,7 +22,7 @@ set(BUNDLE_ID "com.PotenzaDSP.PullUpMachine")
 set(FORMATS AU VST3)
 
 # Configures universal binaries in CI
-include(PamplejuceMacOS)
+include(MacOSConfig)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)

@@ -3,21 +3,11 @@
 cmake_minimum_required(VERSION 3.24.1)
 
 # This tells cmake we have goodies in the /cmake folder
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include (PamplejuceVersion)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
+include (PluginVersion)
 
 # Change me!
-# This is the internal name of the project and the name of JUCE's shared code "target"
-# Note: This cannot have spaces (it may be 2023, but you can't have it all!)
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is DAWs display)
 set(PROJECT_NAME "SimpleClip")
-
-# Worry not, JUCE's PRODUCT_NAME can have spaces (and is what DAWs will display)
-# You can also just have it be the same thing as PROJECT_NAME
-# You may want to append the major version on the end of this (and PROJECT_NAME) ala:
-#   set(PROJECT_NAME "SimpleClip_v${MAJOR_VERSION}")
-# Doing so enables major versions to show up in IDEs and DAWs as separate plugins
-# allowing you to change parameters and behavior without breaking existing user projects
 set(PRODUCT_NAME "SimpleClip")
 
 # Change me! Used for the MacOS bundle name and Installers
@@ -30,14 +20,14 @@ set(BUNDLE_ID "com.PotenzaDSP.SimpleClip")
 # Valid choices: AAX Unity VST VST3 AU AUv3 Standalone
 set(FORMATS AU VST3)
 
-# For simplicity, the name of the CMake project is also the name of the target
-project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
-
 # Configures universal binaries in CI
-include(PamplejuceMacOS)
+include(MacOSConfig)
 
 # Couple tweaks that IMO should be JUCE defaults
 include(JUCEDefaults)
+
+# For simplicity, the name of the CMake project is also the name of the target
+project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 
 # JUCE is setup as a submodule in the /JUCE folder
 # Locally, you must run `git submodule update --init --recursive` once
@@ -56,7 +46,7 @@ juce_add_plugin("${PROJECT_NAME}"
     BUNDLE_ID "${BUNDLE_ID}"
 
     # On MacOS, plugin is copied to ~/Users/yourname/Library/Audio/Plug-Ins/
-    COPY_PLUGIN_AFTER_BUILD TRUE
+    COPY_PLUGIN_AFTER_BUILD FALSE
 
     # Change me!
     # A four-character plugin id
@@ -66,7 +56,7 @@ juce_add_plugin("${PROJECT_NAME}"
     # Change me!
     # A unique four-character plugin id
     # Note: this must have at least one upper-case character
-    PLUGIN_CODE SCLP
+    PLUGIN_CODE Sclp
     FORMATS "${FORMATS}"
 
     # The name of your final executable
@@ -79,11 +69,11 @@ juce_generate_juce_header(SimpleClip)
 
 # This lets us use our code in both the JUCE targets and our Test target
 # Without running into ODR violations
-add_library(SharedCode INTERFACE)
+# add_library(SharedCode INTERFACE)
 
 # C++20, please
 # Use cxx_std_23 for C++23 (as of CMake v 3.20)
-target_compile_features(SharedCode INTERFACE cxx_std_20)
+target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 
 # Manually list all .h and .cpp files for the plugin
 # If you are like me, you'll use globs for your sanity.
@@ -91,7 +81,7 @@ target_compile_features(SharedCode INTERFACE cxx_std_20)
 # If you want to appease the CMake gods and avoid globs, manually add files like so:
 # set(SourceFiles Source/PluginEditor.h Source/PluginProcessor.h Source/PluginEditor.cpp Source/PluginProcessor.cpp)
 file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/source/*.h")
-target_sources(SharedCode INTERFACE ${SourceFiles})
+target_sources("${PROJECT_NAME}" INTERFACE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
 include(Assets)
@@ -125,18 +115,21 @@ target_compile_definitions(SharedCode
 # However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
 # This allows the JUCE plugin targets and the Tests target to link against it
 target_link_libraries(SharedCode
+    PRIVATE
+        Assets
+        ptnz_gui
     INTERFACE
-    juce_audio_utils
-    juce_audio_processors
-    juce_dsp
-    juce_gui_basics
-    juce_gui_extra
-    juce::juce_recommended_config_flags
-    juce::juce_recommended_lto_flags
-    juce::juce_recommended_warning_flags)
+        juce_audio_utils
+        juce_audio_processors
+        juce_dsp
+        juce_gui_basics
+        juce_gui_extra
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
+        juce::juce_recommended_warning_flags)
 
 # Link the JUCE plugin targets our SharedCode target
-target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode ptnz_gui)
+#target_link_libraries("${PROJECT_NAME}" PRIVATE SharedCode ptnz_gui)
 
 # IPP support, comment out to disable
 # include(PamplejuceIPP)
