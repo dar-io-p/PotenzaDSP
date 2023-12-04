@@ -90,7 +90,7 @@ include(Assets)
 include(XcodePrettify)
 
 # This is where you can set preprocessor definitions for JUCE and your plugin
-target_compile_definitions(SharedCode
+target_compile_definitions("${PROJECT_NAME}"
     INTERFACE
 
     # JUCE_WEB_BROWSER and JUCE_USE_CURL off by default
@@ -114,7 +114,7 @@ target_compile_definitions(SharedCode
 # See https://github.com/juce-framework/JUCE/blob/master/docs/CMake%20API.md#juce_add_module
 # However, with Pamplejuce, you'll link modules to SharedCode with INTERFACE visibility
 # This allows the JUCE plugin targets and the Tests target to link against it
-target_link_libraries(SharedCode
+target_link_libraries("${PROJECT_NAME}"
     PRIVATE
         Assets
         ptnz_gui
