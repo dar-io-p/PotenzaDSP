@@ -3,18 +3,18 @@ PotenzaDSP JUCE Projects, gui library, etc.
 
 ## File Structure
 
-/modules  # custom JUCE modules that are reused in the different projects 
+/modules        #custom JUCE modules that are reused in the different projects 
 
-/SimpleClip # JUCE Project Folders 
+/SimpleClip     #JUCE Project Folders 
 
 /SimpleSub 
 
-...  # other projects
+...            # other projects
 
-/JUCE  # JUCE added as a submodule, tracking develop.
+/JUCE          # JUCE added as a submodule, tracking develop.
 
 ## Downloads
 
 To download the latest binaries, head to my website
 
-  www.PotenzaDSP.com
+www.PotenzaDSP.com
