@@ -12,6 +12,7 @@ public:
         buffer.resize(bufferLength);
         i = 0;
         cut = false;
+        gain.reset(newSampleRate, 0.05);
     }
     
     float read(float speed)
@@ -51,7 +52,7 @@ public:
         while (i >= bufferLength)
             i-=bufferLength;
         
-        buffer[static_cast<int>(i)] = value;
+        buffer[static_cast<int>(i)] = value * gain.getNextValue();
         i++;
     } 
     
@@ -60,10 +61,11 @@ public:
         cut = false;
     }
     
-    void updateParams(double bpm, float length)
+    void updateParams(double bpm, float length, float clipGain)
     {
         bufferLength = static_cast<int>(length * (60.0 / bpm) * 4 * sampleRate);
         bufferLength = juce::jmin(bufferLength, static_cast<int>(4 * sampleRate));
+        gain.setTargetValue(clipGain);
     }
     
     std::vector<float>& getBuffer() { return buffer; }
@@ -78,6 +80,7 @@ private:
     
     bool cut;
     juce::LinearSmoothedValue<float> residual;
+    juce::LinearSmoothedValue<float> gain;
     
     float interp(float index)
     {

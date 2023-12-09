@@ -58,20 +58,8 @@ struct AttachedSliderVertical
 class ToggleButtonWithText : public juce::ToggleButton
 {
 public:
-    enum Shape
-    {
-        Rectangle,
-        Ellipse,
-    };
     ToggleButtonWithText(const juce::String& buttonText, juce::LookAndFeel_V4* custom_lnf=nullptr) :
     juce::ToggleButton(buttonText)
-    {
-        shape = Rectangle; 
-        setLookAndFeel(&lnf);
-    }
-    ToggleButtonWithText(const juce::String& buttonText, Shape buttonShape) :
-    juce::ToggleButton(buttonText),
-    shape(buttonShape)
     {
         setLookAndFeel(&lnf);
     }
@@ -90,36 +78,19 @@ public:
             bgColour = getLookAndFeel().findColour(colour_ids::buttonHoverBackground);
         g.setColour(bgColour);
         
-        switch (shape) {
-            case Rectangle:
-                g.fillRoundedRectangle(getLocalBounds().toFloat(), 10.0f);
-                if(getToggleState())
-                {
-                    g.setColour(getLookAndFeel().findColour(juce::Slider::trackColourId));
-                    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(5), 5.f, 2.f);
-                }
-                break;
-            case Ellipse:
-                g.fillEllipse(getLocalBounds().toFloat());
-                if(getToggleState())
-                {
-                    g.setColour(getLookAndFeel().findColour(juce::Slider::trackColourId));
-                    g.drawEllipse(getLocalBounds().toFloat().reduced(5), 2.f);
-                }
-                break;
-            default:
-                break;
+        g.fillRoundedRectangle(getLocalBounds().toFloat(), 10.0f);
+        if(getToggleState())
+        {
+            g.setColour(getLookAndFeel().findColour(juce::Slider::trackColourId));
+            g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(5), 5.f, 2.f);
         }
         
         g.setColour(getLookAndFeel().findColour(juce::TextButton::textColourOnId));
-        g.setFont(styles::getLabelFont());
+        g.setFont(13.f);
         g.drawFittedText(getButtonText(), getLocalBounds(), juce::Justification::centred, 1);
     }
-    Shape getShape() {return shape;}
-    void setShape(Shape newShape) {shape = newShape;}
 private:
     LNF lnf;
-    Shape shape;
 };
 
 class OnOffButton : public juce::ToggleButton

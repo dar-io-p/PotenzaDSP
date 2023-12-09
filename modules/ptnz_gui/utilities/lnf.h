@@ -22,15 +22,15 @@ enum colour_ids
     white,
 };
 
-namespace styles
-{
-    //const juce::Font labelFont  = juce::Font("Futura", 14.f, juce::Font::plain);
-inline juce::Font getLabelFont()     { return juce::Font("Futura", 14.f, juce::Font::plain); }
-inline juce::Font getTitleFont()     { return juce::Font("Futura", 16.f, juce::Font::plain); }
-inline juce::Font getPlainFont()     { return juce::Font("Futura", 13.f, juce::Font::plain); }
-inline juce::Font getBigTitleFont()  { return juce::Font("Futura", 25.f, juce::Font::bold); }
-
-}
+//namespace styles
+//{
+//    //const juce::Font labelFont  = juce::Font("Futura", 14.f, juce::Font::plain);
+//inline juce::Font getLabelFont()     { return juce::Font("Futura", 14.f, juce::Font::plain); }
+//inline juce::Font getTitleFont()     { return juce::Font("Futura", 16.f, juce::Font::plain); }
+//inline juce::Font getPlainFont()     { return juce::Font("Futura", 13.f, juce::Font::plain); }
+//inline juce::Font getBigTitleFont()  { return juce::Font("Futura", 25.f, juce::Font::bold); }
+//
+//}
 
 class LNF : public juce::LookAndFeel_V4
 {
@@ -108,7 +108,7 @@ public:
     void drawLabel(juce::Graphics& g, juce::Label& label) override
     {
         g.setColour(findColour(juce::Label::textColourId));
-        g.setFont(styles::getLabelFont());
+        g.setFont(13.f);
         g.drawFittedText(label.getText(), label.getLocalBounds(), juce::Justification::centred, 1);
         
         //g.setColour(findColour(colour_ids::accent));

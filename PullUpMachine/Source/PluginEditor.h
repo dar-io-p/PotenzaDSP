@@ -38,8 +38,9 @@ private:
     ptnz_gui::AttachedSlider durationSlider;
     ptnz_gui::AttachedSlider bufferLengthSlider;
     ptnz_gui::AttachedSlider powerSlider;
-    
+    AttachedFader volFader;
     BufferView bufferView;
+    juce::ColourGradient bgGrad;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PullUpMachineAudioProcessorEditor)
 };

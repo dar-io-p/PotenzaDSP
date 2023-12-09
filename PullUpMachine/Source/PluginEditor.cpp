@@ -6,13 +6,14 @@ PullUpMachineAudioProcessorEditor::PullUpMachineAudioProcessorEditor (PullUpMach
     AudioProcessorEditor (&p),
     audioProcessor (p),
     wheel(p),
-    trigger(p.apvts, param::toID(param::PID::Trigger),"PULL UP", &lnf),
-    direction(p.apvts, param::toID(param::PID::Direction), "", &lnf),
-    startSpeedSlider(p.apvts, param::toID(param::PID::StartSpeed), param::toName(param::PID::StartSpeed), &lnf),
-    durationSlider(p.apvts, param::toID(param::PID::Duration), param::toName(param::PID::Duration), &lnf),
-    bufferLengthSlider(p.apvts, param::toID(param::PID::BufferLength), param::toName(param::PID::BufferLength), &lnf),
-    powerSlider(p.apvts, param::toID(param::PID::Power), param::toName(param::PID::Power), &lnf),
-    bufferView(p.getCircularBuffer())
+    trigger             (p.apvts, param::toID(param::PID::Trigger),"PULL UP", &lnf),
+    direction           (p.apvts, param::toID(param::PID::Direction), "", &lnf),
+    startSpeedSlider    (p.apvts, param::toID(param::PID::StartSpeed), param::toName(param::PID::StartSpeed), &lnf),
+    durationSlider      (p.apvts, param::toID(param::PID::Duration), param::toName(param::PID::Duration), &lnf),
+    bufferLengthSlider  (p.apvts, param::toID(param::PID::BufferLength), param::toName(param::PID::BufferLength), &lnf),
+    powerSlider         (p.apvts, param::toID(param::PID::Power), param::toName(param::PID::Power), &lnf),
+    volFader            (p.apvts, param::toID(param::PID::Gain), param::toName(param::PID::Gain)),
+    bufferView          (p.getCircularBuffer())
 {
     setSize (340, 490);
     
@@ -39,6 +40,8 @@ PullUpMachineAudioProcessorEditor::PullUpMachineAudioProcessorEditor (PullUpMach
     addAndMakeVisible(bufferLengthSlider.slider);
     addAndMakeVisible(powerSlider.slider);
     
+    addAndMakeVisible(volFader.slider);
+    
     addAndMakeVisible(bufferView);
     
     direction.button.onClick();
@@ -51,14 +54,15 @@ PullUpMachineAudioProcessorEditor::~PullUpMachineAudioProcessorEditor()
 //==============================================================================
 void PullUpMachineAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(lnf.findColour(ptnz_gui::colour_ids::mainBackground));
+    g.setGradientFill(bgGrad);
+    g.fillAll();
     
     auto x = 0;
     auto w = startSpeedSlider.slider.getWidth();
     auto h = 40;
     auto y = startSpeedSlider.slider.getY() - 30;
     g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
-    g.setFont(ptnz_gui::styles::getPlainFont());
+    g.setFont(styles::getPlainFont());
     
     g.drawFittedText("Start Speed", x, y, w, h, juce::Justification::centred, 2);
     x += w;
@@ -76,7 +80,16 @@ void PullUpMachineAudioProcessorEditor::paint (juce::Graphics& g)
 
 void PullUpMachineAudioProcessorEditor::resized()
 {
-    juce::Rectangle<int> bounds = getLocalBounds();
+    auto bounds = getLocalBounds();
+    
+    bgGrad = juce::ColourGradient {
+        colours::background,
+        bounds.toFloat().getBottomLeft(),
+        colours::thirdBG,
+        bounds.toFloat().getTopLeft(),
+        false
+    };
+    
     wheel.setBounds(bounds.removeFromTop(300));
     
     int pot_width = getWidth() / 5;
@@ -93,5 +106,6 @@ void PullUpMachineAudioProcessorEditor::resized()
     direction.button.setBounds(controlBounds.reduced(5));
     
     bounds.removeFromTop(7);
+    volFader.slider.setBounds(bounds.removeFromRight(40));
     bufferView.setBounds(bounds);
 }

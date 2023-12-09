@@ -25,6 +25,7 @@ namespace param {
         Power,
         Trigger,
         Direction,
+        Gain,
         NumParams,
     };
     
@@ -46,6 +47,8 @@ namespace param {
                 return "Trigger";
             case PID::Direction:
                 return "Direction";
+            case PID::Gain:
+                return "WheelUpGain";
             default:
                 return "Unknown";
         }
@@ -60,33 +63,34 @@ namespace param {
         return toID(toName(pID));
     }
 
-    inline void createFloatParam(UniqueRAPVector& vec, PID pID, float min, float max, float defaultValue) {
+    inline void createFloatParam(UniqueRAPVector& vec, PID pID, float min, float max, float defaultValue, bool skew=false, float centreSkew=0.0f) {
     
-    const auto name = toName(pID);
-    const auto ID = toID(name);
-    
-    std::function< juce::String(float, int)> stv = [](float value, int maximumStringLength)
-    {
-        return juce::String(value, 2);
-    };
+        const auto name = toName(pID);
+        const auto ID = toID(name);
         
-    std::function< float(const juce::String)> vts = [](const juce::String &text)
-    {
-        return text.getFloatValue();
-    };
-        
-    RangeF range(min, max);
-    vec.push_back(std::make_unique<APF>
-    (
-     juce::ParameterID {ID, 1},
-     name,
-     range,
-     defaultValue,
-     "",
-     juce::AudioProcessorParameter::genericParameter,
-     stv,
-     vts
-     ));
+        std::function< juce::String(float, int)> stv = [](float value, int maximumStringLength)
+        {
+            return juce::String(value, 2);
+        };
+            
+        std::function< float(const juce::String)> vts = [](const juce::String &text)
+        {
+            return text.getFloatValue();
+        };
+            
+        RangeF range(min, max);
+        if(skew)
+            range.setSkewForCentre(centreSkew);
+        vec.push_back(std::make_unique<APF>
+        (
+             juce::ParameterID {ID, 1},
+             name,
+             range,
+             defaultValue,
+             "",
+             juce::AudioProcessorParameter::genericParameter,
+             stv,
+             vts));
     };
     
     inline Layout createParamterLayout()
@@ -111,6 +115,8 @@ namespace param {
          toName(PID::Direction),
          true
         ));
+        
+        createFloatParam(params, PID::Gain, -100, 0, 0, true, -12);
 
         return {params.begin(), params.end()};
     }

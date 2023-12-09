@@ -34,12 +34,14 @@ PullUpMachineAudioProcessor::PullUpMachineAudioProcessor()
     floatHelper(durationParam, param::PID::Duration);
     floatHelper(bufferLengthParam, param::PID::BufferLength);
     floatHelper(powerParam, param::PID::Power);
+    floatHelper(gainParam, param::PID::Gain);
     
     triggerParam = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(param::toID(param::PID::Trigger)));
-    triggerParam->addListener(this);
     
     directionParam = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(param::toID(param::PID::Direction)));
-    directionParam->addListener(this);
+    
+    apvts.addParameterListener(param::toID(param::PID::Trigger), this);
+    apvts.addParameterListener(param::toID(param::PID::Direction), this);
 }
 
 PullUpMachineAudioProcessor::~PullUpMachineAudioProcessor()
@@ -158,7 +160,8 @@ void PullUpMachineAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     if (auto bpmFromHost = *getPlayHead()->getPosition()->getBpm())
         bpm.store(bpmFromHost);
     
-    rewinder.updateParams(bpm, startSpeedParam->get(), durationParam->get(), powerParam->get(), bufferLengthParam->get());
+    float gain = juce::Decibels::decibelsToGain(gainParam->get());
+    rewinder.updateParams(bpm, startSpeedParam->get(), durationParam->get(), powerParam->get(), bufferLengthParam->get(), gain);
     
     rewinder.process(buffer, triggerParam->get());
 }
@@ -199,25 +202,20 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new PullUpMachineAudioProcessor();
 }
 
-void PullUpMachineAudioProcessor::parameterValueChanged (int parameterIndex, float newValue)
+void PullUpMachineAudioProcessor::parameterChanged(const juce::String &parameterID, float newValue)
 {
-    if (parameterIndex == static_cast<int>(param::PID::Trigger))
+    if (parameterID == param::toID(param::PID::Trigger))
     {
         bool val = static_cast<bool> (newValue);
         if (val == false)
         {
             rewinder.reset();
         }
-    }else if (parameterIndex == static_cast<int>(param::PID::Direction))
+    }else if (parameterID == param::toID(param::PID::Direction))
     {
         bool val = static_cast<bool> (newValue);
         //backwards = true
         SpeedEnvelope::Direction dir = val ? SpeedEnvelope::Direction::backwards : SpeedEnvelope::Direction::forwards;
         rewinder.changeDirection(dir);
     }
-}
-
-void PullUpMachineAudioProcessor::parameterGestureChanged (int parameterIndex, bool gestureIsStarting)
-{
-    
 }

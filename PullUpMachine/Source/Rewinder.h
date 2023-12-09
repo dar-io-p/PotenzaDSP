@@ -19,12 +19,12 @@ public:
         }
     }
     
-    void updateParams(double bpm, float startSpeed, float duration, float power, float bufferLength)
+    void updateParams(double bpm, float startSpeed, float duration, float power, float bufferLength, float clipGain)
     {
         for (unsigned c = 0; c < 2; c++)
         {
             envelope[c].updateParams(bpm, startSpeed, duration, power);
-            cBuffer[c].updateParams(bpm, bufferLength);
+            cBuffer[c].updateParams(bpm, bufferLength, clipGain);
         }
     }
     

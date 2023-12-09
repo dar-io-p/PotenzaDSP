@@ -7,7 +7,7 @@
 
 class PullUpMachineAudioProcessor  :
     public juce::AudioProcessor,
-    juce::AudioProcessorParameter::Listener
+    juce::AudioProcessorValueTreeState::Listener
     #if JucePlugin_Enable_ARA
     , public juce::AudioProcessorARAExtension
     #endif
@@ -50,8 +50,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
-    void parameterValueChanged (int parameterIndex, float newValue) override;
-    void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
+    //void parameterValueChanged (int parameterIndex, float newValue) override;
+    //void parameterGestureChanged (int parameterIndex, bool gestureIsStarting) override;
+    void parameterChanged(const juce::String &parameterID, float newValue) override;
     
     double getBPM () { return bpm.load(); }
     
@@ -73,6 +74,7 @@ private:
     juce::AudioParameterFloat* durationParam;
     juce::AudioParameterFloat* bufferLengthParam;
     juce::AudioParameterFloat* powerParam;
+    juce::AudioParameterFloat* gainParam;
     
     std::atomic<double> bpm { 120.0 };
     //==============================================================================
