@@ -1,4 +1,4 @@
-name: build-PullUpMachine
+name: build-Dubber
 
 on:
   workflow_dispatch: # lets you run a build from the UI
