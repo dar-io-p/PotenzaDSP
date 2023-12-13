@@ -54,7 +54,7 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
-    float getLFOValue() { return siren.getLFOValue(); }
+    param::lfo_data getLFOValue() { return siren.getLFOValue(); }
     
     juce::AudioProcessorValueTreeState apvts;
 private:

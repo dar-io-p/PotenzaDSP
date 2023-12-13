@@ -56,6 +56,9 @@ public:
         
         setColour(colour_ids::outlineColour, juce::Colours::black);
         setColour(colour_ids::white, juce::Colours::white);
+        
+        setColour(colour_ids::mainBackground, juce::Colours::black);
+        setColour(colour_ids::secondaryBackground, juce::Colours::darkgrey);
     }
     
     void drawRotarySlider (juce::Graphics& g, int x, int y, int width, int height, float sliderPos,

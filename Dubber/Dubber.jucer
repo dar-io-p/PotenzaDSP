@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="BddCiU" name="Dub-Siren" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
-  <MAINGROUP id="MgbkVp" name="Dub-Siren">
+<JUCERPROJECT id="BddCiU" name="Dubber" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="PotenzaDSP" pluginName="Dubber" pluginManufacturerCode="PTNZ"
+              pluginCode="Dbbr">
+  <MAINGROUP id="MgbkVp" name="Dubber">
     <GROUP id="{9DA66F37-8073-D022-FBAB-83F5586A011B}" name="GUI">
       <FILE id="l6kMCH" name="LFODisplay.h" compile="0" resource="0" file="Source/LFODisplay.h"/>
       <FILE id="ojILyE" name="LookAndFeel.h" compile="0" resource="0" file="Source/LookAndFeel.h"/>
@@ -21,6 +23,11 @@
       <FILE id="aQOSPo" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="gAekGE" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{E6D78226-0C16-C50B-3D4B-34E8B1F8C252}" name="assets">
+      <FILE id="Zj2FU8" name="Futura Heavy font.ttf" compile="0" resource="1"
+            file="assets/Futura Heavy font.ttf"/>
+      <FILE id="uQvcdl" name="BG.png" compile="0" resource="1" file="assets/BG.png"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>
@@ -45,8 +52,8 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" extraLinkerFlags="-Wl,-ld_classic"
                extraDefs="JUCE_SILENCE_XCODE_15_LINKER_WARNING">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Dub-Siren"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="Dub-Siren"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Dubber"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="Dubber"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>

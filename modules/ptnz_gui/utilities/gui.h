@@ -81,7 +81,7 @@ public:
         g.fillRoundedRectangle(getLocalBounds().toFloat(), 10.0f);
         if(getToggleState())
         {
-            g.setColour(getLookAndFeel().findColour(juce::Slider::trackColourId));
+            g.setColour(getLookAndFeel().findColour(colour_ids::accent));
             g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(5), 5.f, 2.f);
         }
         

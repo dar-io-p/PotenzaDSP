@@ -25,12 +25,12 @@ public:
         phase.reset();
     }
     
-    float getLFOValue()
+    param::lfo_data getLFOValue()
     {
         float inc = juce::MathConstants<float>::twoPi * freq / sampleRate;
         float phi = phase.advance(inc);
         float mod = (1.0f - lfoBlend) * lfo1Funcs[type1](phi) + (lfoBlend) * lfo2Funcs[type2](phi);
-        return magnitude * mod;
+        return {phi, mod, magnitude};
     }
     
     void update(float fre, float mag, int index1, int index2, float blend)
@@ -405,17 +405,15 @@ public:
     void update()
     {
         lfo.update(modRateParam->get(), modAmountParam->get(), lfo1TypeParam->getIndex(), lfo2TypeParam->getIndex(), lfoBlendParam->get());
-        
-        float modAmount = 0;
-        
+                
         //if not bypassed get LFO value
         if(!lfoBypassParam->get())
         {
-            modAmount = lfo.getLFOValue();
+            lfoData = lfo.getLFOValue();//modAmount = lfo.getLFOValue();
         }
         
-        lfoVal.store(modAmount);
-        osc.update(baseFreqParam->get(), modAmount);
+        //lfoVal.store(modAmount);
+        osc.update(baseFreqParam->get(), lfoData.val * lfoData.magnitude);
         
         if(activateParam->get())
         {
@@ -427,15 +425,16 @@ public:
         }
     }
     
-    float getLFOValue()
+    param::lfo_data getLFOValue()
     {
-        return lfoVal.load();
+        return lfoData;
     }
 private:
     LFO lfo;
     //Osc osc;
     BandLimitedOscillator osc;
-    std::atomic<float> lfoVal;
+    //std::atomic<float> lfoVal;
+    param::lfo_data lfoData;
     juce::dsp::Gain<float> outGain;
     
     juce::AudioParameterFloat*  modAmountParam;

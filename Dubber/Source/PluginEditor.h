@@ -30,6 +30,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
+    DubberLookAndFeel lnf;
     DubSirenAudioProcessor& audioProcessor;
     
     AttachedChoiceButton lfo1Choice;
@@ -43,7 +44,14 @@ private:
     ptnz_gui::AttachedSlider baseFreqSlider;
     ptnz_gui::AttachedSlider outGainSlider;
     
-    ptnz_gui::AttachedButton activateButton;
+    AttachedDubButton activateButton;
+    
+    juce::Image bgImage;
+    
+    void drawSliderLabel(juce::Graphics& g, juce::Slider& slider, const juce::String& text)
+    {
+        g.drawFittedText(text, slider.getX(), slider.getY(), slider.getWidth(), 30, juce::Justification::centred, 1);
+    }
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DubSirenAudioProcessorEditor)
 };

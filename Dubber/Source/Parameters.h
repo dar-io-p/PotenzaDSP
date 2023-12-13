@@ -14,6 +14,13 @@ using APB = juce::AudioParameterBool;
 using RangeF = juce::NormalisableRange<float>;
 using String = juce::String;
 
+struct lfo_data
+{
+    float phase;
+    float val;
+    float magnitude;
+};
+
 enum PID {
     p_LFODepth,
     p_LFORate,
@@ -25,6 +32,7 @@ enum PID {
     p_oscShape,
     p_outGain,
     p_active,
+    p_retrig,
     NumParams,
 };
 
@@ -42,7 +50,8 @@ inline const std::map<PID, String>& GetParams(){
         {p_oscFreq,"BaseFrequency"},
         {p_oscShape,"OscFreq"},
         {p_outGain,"OutGain"},
-        {p_active,"Activate"}
+        {p_active,"Activate"},
+        {p_retrig,"Retrigger"}
     };
     
     return params;
@@ -224,6 +233,7 @@ inline Layout createParamterLayout()
     
     createParamFloat(params, p_LFOBlend, 0.0f, 1.0f, 0.0f, valToStr::generic(), strToVal::generic(), 0.5f);
     
+    createParamBool(params, p_retrig, false);
     
     return {params.begin(), params.end()};
 }
