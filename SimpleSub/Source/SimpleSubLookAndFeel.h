@@ -2,6 +2,29 @@
 #include "ptnz_gui/ptnz_gui.h"
 #include "Parameters.h"
 
+namespace fonts
+{
+    //const juce::Font labelFont  = juce::Font("Futura", 14.f, juce::Font::plain);
+static const juce::Typeface::Ptr getTypeface()
+{
+    static auto typeface = juce::Typeface::createSystemTypefaceFor (BinaryData::Futura_Heavy_font_ttf, BinaryData::Futura_Heavy_font_ttfSize);
+    return typeface;
+}
+
+static const juce::Font getLabelFont()     {
+    return juce::Font(getTypeface()).withHeight(14.f);
+}
+static const juce::Font getTitleFont()     {
+    return juce::Font(getTypeface()).withHeight(16.f);
+}
+static const juce::Font getPlainFont()     {
+    return juce::Font(getTypeface()).withHeight(12.f);
+}
+static const juce::Font getBigTitleFont()  {
+    return juce::Font(getTypeface()).withHeight(25.f);
+}
+}
+
 namespace colours
 {
 const juce::Colour background = juce::Colour(0xff0b0b0d);
@@ -44,6 +67,9 @@ public:
         
         setColour(c::outlineColour, colours::grey1);
         setColour(c::white, colours::textColour);
+        
+        juce::LookAndFeel::setDefaultLookAndFeel(this);
+        setDefaultSansSerifTypeface(fonts::getTypeface());
     }
 };
 

@@ -84,7 +84,7 @@ file(GLOB_RECURSE SourceFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/sou
 target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
 
 # Adds a BinaryData target for embedding assets into the binary
-# include(Assets)
+include(Assets)
 
 # MacOS only: Cleans up folder and target organization on Xcode.
 include(XcodePrettify)
@@ -116,6 +116,7 @@ target_compile_definitions("${PROJECT_NAME}"
 # This allows the JUCE plugin targets and the Tests target to link against it
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
+        Assets
         ptnz_gui
     PUBLIC
         juce_audio_utils

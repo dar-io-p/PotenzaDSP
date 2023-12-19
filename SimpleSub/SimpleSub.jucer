@@ -33,6 +33,10 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="dh5wZG" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <GROUP id="{1F73D199-48CC-D7C5-D010-125DA778B61A}" name="assets">
+      <FILE id="UVBQsC" name="Futura Heavy font.ttf" compile="0" resource="1"
+            file="assets/Futura Heavy font.ttf"/>
+    </GROUP>
   </MAINGROUP>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>

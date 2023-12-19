@@ -49,7 +49,7 @@ void SimpleSubAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawRoundedRectangle(middlePanel.getBounds().toFloat(), 5.f, 3.f);
     g.drawRoundedRectangle(bottomPanel.getBounds().toFloat(), 5.f, 3.f);
     
-    g.setFont(ptnz_gui::styles::getBigTitleFont());
+    g.setFont(fonts::getBigTitleFont());
     auto banner = juce::Rectangle<int>(0,0,getWidth(),bannerSize+8).reduced(8, 0);
     g.drawFittedText("PotenzaDSP", banner, juce::Justification::centredLeft, 1);
     g.drawFittedText("SimpleSub", banner, juce::Justification::centredRight, 1);

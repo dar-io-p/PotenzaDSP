@@ -46,7 +46,7 @@ public:
 //        g.fillRoundedRectangle(envelopeViewer.getBounds().expanded(2, 2).toFloat(), 8.f);
         
         g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.6f));
-        g.setFont(ptnz_gui::styles::getPlainFont());
+        g.setFont(fonts::getPlainFont());
         g.drawFittedText("A CURVE", curve_A_slider.slider.getX(), curve_A_slider.slider.getY() - 16, curve_A_slider.slider.getWidth(), 20, juce::Justification::centred, 1);
         g.drawFittedText("D/R CURVE", curve_DR_slider.slider.getX(), curve_DR_slider.slider.getY() - 16, curve_DR_slider.slider.getWidth(), 20, juce::Justification::centred, 1);
         

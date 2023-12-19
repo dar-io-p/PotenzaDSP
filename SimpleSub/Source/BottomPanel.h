@@ -45,7 +45,7 @@ public:
     void paint (juce::Graphics& g) override
     {
         g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
-        g.setFont(ptnz_gui::styles::getTitleFont());
+        g.setFont(fonts::getTitleFont());
         
         g.drawFittedText("Harmonics", hBox.getX(), hBox.getY() - 23 , hBox.getWidth(), 20, juce::Justification::centred, 1);
         

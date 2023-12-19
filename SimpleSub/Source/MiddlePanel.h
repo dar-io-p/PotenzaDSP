@@ -34,7 +34,7 @@ public:
     {
         g.setColour(lnf.findColour(ptnz_gui::colour_ids::white));
         
-        g.setFont(ptnz_gui::styles::getTitleFont());
+        g.setFont(fonts::getTitleFont());
         drawSliderTitle(g, widthSlider.slider, "WIDTH");
         
         if (!distActiveButton.button.getToggleState()) g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.2f));
