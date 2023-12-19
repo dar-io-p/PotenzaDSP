@@ -67,8 +67,6 @@ public:
     }
 private:
     SimpleClipLookAndFeel lnf;
-    InputMeterLNF inputLNF;
-    OutputMeterLNF outputLNF;
     SimpleClipAudioProcessor& audioProcessor;
     
 //    ptnz_gui::AttachedSlider aKneeSlider,       aThreshSlider;

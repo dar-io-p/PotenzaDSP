@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="LodYfn" name="SimpleClip" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCode="SCLP" companyName="PotenzaDSP" pluginManufacturerCode="PTNZ"
+              pluginCode="Sclp" companyName="PotenzaDSP" pluginManufacturerCode="PTNZ"
               pluginManufacturer="PotenzaDSP" pluginFormats="buildAU,buildVST3"
               pluginName="SimpleClip">
   <MAINGROUP id="ttpKg9" name="SimpleClip">
@@ -37,6 +37,10 @@
       <FILE id="lcdu1V" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="MamgOQ" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+    <GROUP id="{D4AB4479-C018-76CF-CCD0-6B213D3582AC}" name="assets">
+      <FILE id="hviHcf" name="Futura Heavy font.ttf" compile="0" resource="1"
+            file="assets/Futura Heavy font.ttf"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

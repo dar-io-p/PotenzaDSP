@@ -4,7 +4,7 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyName="PotenzaDSP" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               pluginName="SimpleSub" pluginManufacturer="PotenzaDSP" pluginManufacturerCode="PTNZ"
-              pluginCode="SSUB" cppLanguageStandard="20">
+              pluginCode="Ssub" cppLanguageStandard="20">
   <MAINGROUP id="iqo8qB" name="SimpleSub">
     <GROUP id="{E1319AA9-2401-764D-D85D-199F54546F22}" name="GUI">
       <FILE id="bG2nUB" name="BottomPanel.h" compile="0" resource="0" file="Source/BottomPanel.h"/>
