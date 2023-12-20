@@ -13,7 +13,6 @@ env:
   BUILD_TYPE: Release
   BUILD_DIR: Builds
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  # DISPLAY: :0 # linux pluginval needs this
   PROJECT_DIR: Dubber
   PROJECT_BUILD_DIR: Dubber/Builds
   CMAKE_BUILD_PARALLEL_LEVEL: 3 # Use up to 3 cpus to build juceaide, etc
@@ -23,8 +22,6 @@ env:
 # all steps run in series
 jobs:
   build_and_test:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false # show all errors for each platform (vs. cancel jobs on error)
       matrix:
@@ -33,12 +30,32 @@ jobs:
             os: macos-11
             pluginval-binary: pluginval.app/Contents/MacOS/pluginval
             ccache: ccache
+          - name: Linux
+            os: ubuntu-latest
+            pluginval-binary: ./pluginval
+            ccache: ccache
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
 
     steps:
 
+    - name: Setup Ninja
+      uses: lukka/get-cmake@latest
+
     - name: Install macOS Deps
       if: ${{ matrix.name == 'macOS' }}
-      run: brew install ninja osxutils
+      run: brew install osxutils
+
+    - name: Install Linux Deps
+      if: ${{ matrix.name == 'Linux' }}
+      run: |
+        sudo apt install libasound2-dev libjack-jackd2-dev \
+        ladspa-sdk \
+        libcurl4-openssl-dev  \
+        libfreetype6-dev \
+        libx11-dev libxcomposite-dev libxcursor-dev libxcursor-dev libxext-dev libxinerama-dev libxrandr-dev libxrender-dev \
+        libwebkit2gtk-4.0-dev \
+        libglu1-mesa-dev mesa-common-dev
 
     - name: Checkout code
       uses: actions/checkout@v3
@@ -87,14 +104,16 @@ jobs:
         echo "AU_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AU/${{ env.PRODUCT_NAME }}.component" >> $GITHUB_ENV
         echo "AUV3_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AUv3/${{ env.PRODUCT_NAME }}.appex" >> $GITHUB_ENV          
         echo "ARTIFACT_NAME=${{ env.PRODUCT_NAME }}-${{ env.VERSION }}-${{ matrix.name }}" >> $GITHUB_ENV
-        
+
     - name: Pluginval
-      working-directory: ${{ env.PROJECT_BUILD_DIR }}
-      shell: bash
-      run: |
-        curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
-        7z x pluginval_${{ matrix.name }}.zip
-        ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
+      uses: coactions/setup-xvfb@v1
+      with:
+        working-directory: ${{ env.PROJECT_BUILD_DIR }}
+        shell: bash
+        run: |
+          curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
+          7z x pluginval_${{ matrix.name }}.zip
+          ${{ matrix.pluginval-binary }} --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
 
     - name: Codesign (macOS)
       working-directory: ${{ env.PROJECT_BUILD_DIR }}
