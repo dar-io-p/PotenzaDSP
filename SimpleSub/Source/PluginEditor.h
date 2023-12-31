@@ -38,8 +38,6 @@ private:
     BottomPanel bottomPanel;
     
     const int bannerSize = 30;
-    //DistortionPanel distPanel;
-    //GlidePanel glidePanel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleSubAudioProcessorEditor)
 };

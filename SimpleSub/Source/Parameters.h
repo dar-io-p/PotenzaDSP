@@ -247,7 +247,7 @@ inline Layout createParamterLayout()
     createParamFloat(params, param_A_curve, 0, 50, 50, valToStr::generic(), strToVal::generic(), 1);
     createParamFloat(params, param_DR_curve, 0, 50, 50, valToStr::generic(), strToVal::generic(), 1);
     
-    createParamFloat(params, param_drive, -24, 24, -12, valToStr::db(), strToVal::db(), 0);
+    createParamFloat(params, param_drive, 0, 32, 0, valToStr::db(), strToVal::db(), 12);
     createParamFloat(params, param_out_gain, -100, 12, -12, valToStr::db(), strToVal::db(), 0);
     
     createParamFloat(params, param_harmonic_1, 0, 1, 1, valToStr::generic(), strToVal::generic(), 0.25);

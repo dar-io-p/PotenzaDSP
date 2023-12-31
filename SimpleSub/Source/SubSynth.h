@@ -109,7 +109,7 @@ public:
     {
         auto rateL =    juce::jmap  (w,     0.f,    1.f,    0.5f,   3.f);
         auto rateR =    juce::jmap  (w,     0.f,    1.f,    0.5f,   4.f);
-        auto depth =    juce::jmap  (w,     0.f,    1.f,    0.f,    0.25f);
+        auto depth =    juce::jmap  (w,     0.f,    1.f,    0.f,    0.15f);
         auto delayL =   juce::jmap  (w,     0.f,    1.f,    5.f,    7.f);
         auto delayR =   juce::jmap  (w,     0.f,    1.f,    5.5f,   9.f);
         auto mix =      juce::jmap  (w,     0.f,    1.f,    0.f,    0.6f);
@@ -119,7 +119,7 @@ public:
             ch.setMix(mix);
         }
         processors[0].setCentreDelay(delayL);
-        processors[1].setCentreDelay(delayL);
+        processors[1].setCentreDelay(delayR);
         processors[0].setRate(rateL);
         processors[1].setRate(rateR);
 

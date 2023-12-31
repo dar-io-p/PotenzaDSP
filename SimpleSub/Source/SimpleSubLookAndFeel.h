@@ -4,7 +4,6 @@
 
 namespace fonts
 {
-    //const juce::Font labelFont  = juce::Font("Futura", 14.f, juce::Font::plain);
 static const juce::Typeface::Ptr getTypeface()
 {
     static auto typeface = juce::Typeface::createSystemTypefaceFor (BinaryData::Futura_Heavy_font_ttf, BinaryData::Futura_Heavy_font_ttfSize);
