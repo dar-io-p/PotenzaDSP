@@ -12,7 +12,7 @@ namespace BinaryData
     const int            Futura_Heavy_font_ttfSize = 38980;
 
     extern const char*   BG_png;
-    const int            BG_pngSize = 133453;
+    const int            BG_pngSize = 144860;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
     const int namedResourceListSize = 2;
