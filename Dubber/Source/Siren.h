@@ -219,7 +219,7 @@ private:
         v++;
         int tableLen = v * 2;
         
-        double ar[tableLen], ai[tableLen];
+        double *ar = new double[tableLen](), *ai = new double[tableLen]();
         
         double topFreq = baseFrequency * 2.0 / sampleRate;
         double scale = 0.0;
@@ -230,6 +230,9 @@ private:
             if (tableLen > 999999)
                 tableLen >>= 1;
         }
+        
+        delete[] ar;
+        delete[] ai;
     }
     
     void defineSawtooth(int len, int numHarmonics, double* ar, double* ai)
@@ -269,13 +272,16 @@ private:
             scale = 1.0 / max * 0.999;
         }
         
-        float wave[len];
+        float *wave = new float[len]();
+        
         for (int idx=0; idx < len; idx++) {
             wave[idx] = ai[idx] * scale;
         }
         
         if (addWaveTable(len, wave, topFreq))
             scale = 0.0;
+        
+        delete[] wave;
         
         return scale;
     }
@@ -333,8 +339,8 @@ private:
             LE *= 2;                          // (LE = 2^L)
             Ur = 1.0;
             Ui = 0.;
-            Wr = cos(M_PI/(float)LE1);
-            Wi = -sin(M_PI/(float)LE1); // Cooley, Lewis, and Welch have "+" here
+            Wr = cos(juce::MathConstants<float>::pi /(float)LE1);
+            Wi = -sin(juce::MathConstants<float>::pi /(float)LE1); // Cooley, Lewis, and Welch have "+" here
             for (j = 1; j <= LE1; j++) {
                 for (i = j; i <= N; i += LE) { // butterfly
                     ip = i+LE1;
