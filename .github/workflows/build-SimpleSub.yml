@@ -201,7 +201,7 @@ jobs:
     - name: Zip (Windows)
       if: ${{ matrix.name == 'Windows' }}
       working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
-      run: Compress-Archive -Path "VST3/${{ env.PRODUCT_NAME }}.vst3" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
+      run: Compress-Archive -Path "VST3/*.vst3" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
       
     - name: Upload Zip (MacOS)
       if: ${{ matrix.name == 'macOS' }}
