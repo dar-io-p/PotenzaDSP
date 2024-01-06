@@ -196,12 +196,12 @@ jobs:
     - name: Zip (Linux)
       if: ${{ matrix.name == 'Linux' }}
       working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
-      run: 7z a -tzip "${{ env.PRODUCT_NAME }}_Linux.zip" .
+      run: 7z a -tzip "${{ env.PRODUCT_NAME }}_Linux.zip" "VST3/${{ env.PRODUCT_NAME }}.vst3"
 
     - name: Zip (Windows)
       if: ${{ matrix.name == 'Windows' }}
       working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
-      run: Compress-Archive -Path "./*" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
+      run: Compress-Archive -Path "VST3/${{ env.PRODUCT_NAME }}.vst3" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
       
     - name: Upload Zip (MacOS)
       if: ${{ matrix.name == 'macOS' }}
