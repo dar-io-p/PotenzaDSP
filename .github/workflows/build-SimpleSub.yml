@@ -157,25 +157,6 @@ jobs:
     #    SetFile -a C "${{ env.VST3_PATH }}"
     #    SetFile -a C "${{ env.AU_PATH }}"
 
-    #- name: Create DMG, Notarize and Staple (macOS)
-    #  if: ${{ matrix.name == 'macOS' }}
-    #  run: |
-    #    npm install -g appdmg
-    #    mkdir -p packaging
-    #    
-    #    # Create directories for the dmg symlinks
-    #    sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/Components && sudo mkdir -m 755 -p /Library/Audio/Plug-Ins/VST3
-    #    ln -s /Library/Audio/Plug-Ins/VST3 "packaging/dmg/Your Mac's VST3 folder"
-    #    ln -s /Library/Audio/Plug-Ins/Components "packaging/dmg/Your Mac's Component folder"
-    #    mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging/dmg
-    #    mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging/dmg
-    #    
-    #    # Run appdmg to create the .dmg
-    #    cd packaging && appdmg dmg.json "${{ env.ARTIFACT_NAME}}.dmg"
-    #    codesign -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" --timestamp -i ${{ env.BUNDLE_ID }} --force "${{ env.ARTIFACT_NAME }}.dmg"
-    #    xcrun notarytool submit "${{ env.ARTIFACT_NAME }}.dmg" --apple-id ${{ secrets.NOTARIZATION_USERNAME }} --password ${{ secrets.NOTARIZATION_PASSWORD }} --team-id ${{ secrets.TEAM_ID }} --wait
-    #    xcrun stapler staple "${{ env.ARTIFACT_NAME }}.dmg"
-
     - name: Create zip, notarize and staple (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
@@ -209,19 +190,39 @@ jobs:
         
         # Zip both components together
         ls
-        zip -r "${{ env.PRODUCT_NAME }}.zip" "${{ env.PRODUCT_NAME }}.vst3" "${{ env.PRODUCT_NAME }}.component"
-        
+        zip -r "${{ env.PRODUCT_NAME }}_MacOS.zip" "${{ env.PRODUCT_NAME }}.vst3" "${{ env.PRODUCT_NAME }}.component"
+
+
+    - name: Zip (Linux)
+      if: ${{ matrix.name == 'Linux' }}
+      working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
+      run: 7z a -tzip "${{ env.PRODUCT_NAME }}_Linux.zip" .
+
+    - name: Zip (Windows)
+      if: ${{ matrix.name == 'Windows' }}
+      working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
+      run: Compress-Archive -Path "./*" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
       
-    - name: Upload DMG (MacOS)
+    - name: Upload Zip (MacOS)
       if: ${{ matrix.name == 'macOS' }}
       uses: actions/upload-artifact@v3
-      # run: mkdir -p path/to/artifact
       with:
         name: ${{ env.PRODUCT_NAME }}.zip
         path: packaging/${{ env.PRODUCT_NAME }}.zip
 
-    - name: Get Artifacts
-      uses: actions/download-artifact@v3
+    - name: Upload Zip (Windows)
+      if: ${{ matrix.name == 'Windows' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.PRODUCT_NAME }}.zip
+        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}.zip
+
+    - name: Upload Zip (Linux)
+      if: ${{ matrix.name == 'Linux' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.PRODUCT_NAME }}.zip
+        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}.zip
 
   release:
     # if: contains(github.ref, 'tags/v')
