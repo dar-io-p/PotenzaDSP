@@ -207,22 +207,22 @@ jobs:
       if: ${{ matrix.name == 'macOS' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.PRODUCT_NAME }}.zip
-        path: packaging/${{ env.PRODUCT_NAME }}.zip
+        name: ${{ env.PRODUCT_NAME }}_MacOS.zip
+        path: packaging/${{ env.PRODUCT_NAME }}_MacOS.zip
 
     - name: Upload Zip (Windows)
       if: ${{ matrix.name == 'Windows' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.PRODUCT_NAME }}.zip
-        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}.zip
+        name: ${{ env.PRODUCT_NAME }}_Windows.zip
+        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Windows.zip
 
     - name: Upload Zip (Linux)
       if: ${{ matrix.name == 'Linux' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.PRODUCT_NAME }}.zip
-        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}.zip
+        name: ${{ env.PRODUCT_NAME }}_Linux.zip
+        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Linux.zip
 
   release:
     # if: contains(github.ref, 'tags/v')
