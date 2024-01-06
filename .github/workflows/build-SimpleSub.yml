@@ -34,6 +34,10 @@ jobs:
             os: ubuntu-latest
             pluginval-binary: ./pluginval
             ccache: ccache
+          - name: Windows
+            os: windows-2022
+            pluginval-binary: .\pluginval.exe
+            ccache: ccache
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
@@ -75,10 +79,23 @@ jobs:
         p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
         p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
 
-    - name: Configure
+    - name: Configure (macOS)
+      if: ${{ matrix.name == 'macOS' }}
       shell: bash
       working-directory: ${{env.PROJECT_DIR}}
       run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" .
+
+    - name: Configure (Linux)
+      if: ${{ matrix.name == 'Linux' }}
+      shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
+      run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} .
+
+    - name: Configure (Windows)
+      if: ${{ matrix.name == 'Windows' }}
+      shell: bash
+      working-directory: ${{env.PROJECT_DIR}}
+      run: cmake -B ${{ env.BUILD_DIR }} -G 'Visual Studio 17 2022' -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE}} -DCMAKE_C_COMPILER_LAUNCHER=${{ matrix.ccache }} -DCMAKE_CXX_COMPILER_LAUNCHER=${{ matrix.ccache }} .
 
     - name: Build
       shell: bash
@@ -109,7 +126,6 @@ jobs:
       uses: coactions/setup-xvfb@v1
       with:
         working-directory: ${{ env.PROJECT_BUILD_DIR }}
-        shell: bash
         run: |
           curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.3/pluginval_${{ matrix.name }}.zip"
           7z x pluginval_${{ matrix.name }}.zip
