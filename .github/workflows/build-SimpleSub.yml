@@ -201,7 +201,9 @@ jobs:
     - name: Zip (Windows)
       if: ${{ matrix.name == 'Windows' }}
       working-directory: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}
-      run: Compress-Archive -Path "VST3/*.vst3" -DestinationPath "${{ env.PRODUCT_NAME }}_Windows.zip"
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ env.PRODUCT_NAME }}_Windows"
+        Move-Item VST3/${{ env.PRODUCT_NAME }}.vst3 "${{ env.PRODUCT_NAME }}_Windows"
       
     - name: Upload Zip (MacOS)
       if: ${{ matrix.name == 'macOS' }}
@@ -214,8 +216,8 @@ jobs:
       if: ${{ matrix.name == 'Windows' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.PRODUCT_NAME }}_Windows.zip
-        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Windows.zip
+        name: ${{ env.PRODUCT_NAME }}_Windows
+        path: ${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Windows
 
     - name: Upload Zip (Linux)
       if: ${{ matrix.name == 'Linux' }}
