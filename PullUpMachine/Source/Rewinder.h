@@ -32,21 +32,32 @@ public:
     {
         int numSamples = buffer.getNumSamples();
         int numChannels = buffer.getNumChannels();
-
-        for (unsigned c = 0; c < numChannels; c++)
+        
+        //if not being triggered
+        if(!trig)
         {
-            float* data = buffer.getWritePointer(c);
-            for (unsigned i = 0; i < numSamples; i++)
+            for (unsigned c = 0; c < numChannels; c++)
             {
-                if (!trig)
+                float* data = buffer.getWritePointer(c);
+                for (unsigned i = 0; i < numSamples; i++)
                 {
+                    //write the audio to the buffer
                     cBuffer[c].store(data[i]);
                 }
-                else{
+            }
+        }
+        else{
+            for (unsigned c = 0; c < numChannels; c++)
+            {
+                float* data = buffer.getWritePointer(c);
+                for (unsigned i = 0; i < numSamples; i++)
+                {
+                    //otherwise read from buffer using the envelope
                     data[i] = cBuffer[c].read(envelope[c].getNextValue());
                 }
             }
         }
+
     }
     
     void reset()

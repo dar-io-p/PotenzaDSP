@@ -77,14 +77,16 @@ class EnvelopeLookAndFeel : public SimpleSubLookAndFeel
 public:
     EnvelopeLookAndFeel() :
     SimpleSubLookAndFeel()
-    {}
+    {
+    setDefaultSansSerifTypeface(fonts::getTypeface());
+    }
     
     void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider &slider) override
     {
         auto bounds = slider.getLocalBounds();
         g.setColour(findColour(ptnz_gui::colour_ids::secondaryAccent));
         //g.setFont(12.f);
-        g.setFont(juce::Font("Futura", 14.f, juce::Font::plain));
+        g.setFont(14.f);
         g.drawFittedText(slider.getTextFromValue(slider.getValue()), bounds, juce::Justification::centred, 1);
     }
 };

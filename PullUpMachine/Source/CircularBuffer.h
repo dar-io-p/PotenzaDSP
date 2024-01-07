@@ -1,18 +1,20 @@
 #pragma once
 #include <JuceHeader.h>
 
+#define MAX_BUFFER_SECONDS 10
+
 class CircularBuffer
 {
 public:
     void prepare(double newSampleRate)
     {
         sampleRate = newSampleRate;
-        bufferLength = static_cast<int>(4 * sampleRate);
-        residual.reset(sampleRate, 0.001);
+        bufferLength = static_cast<int>(MAX_BUFFER_SECONDS * sampleRate);
         buffer.resize(bufferLength);
+        residual.reset(sampleRate, 0.001);
         i = 0;
         cut = false;
-        gain.reset(newSampleRate, 0.05);
+        gain.reset(sampleRate, 0.05);
     }
     
     float read(float speed)
@@ -64,7 +66,7 @@ public:
     void updateParams(double bpm, float length, float clipGain)
     {
         bufferLength = static_cast<int>(length * (60.0 / bpm) * 4 * sampleRate);
-        bufferLength = juce::jmin(bufferLength, static_cast<int>(4 * sampleRate));
+        bufferLength = juce::jmin(bufferLength, static_cast<int>(MAX_BUFFER_SECONDS * sampleRate));
         gain.setTargetValue(clipGain);
     }
     
@@ -79,16 +81,10 @@ private:
     float i;
     
     bool cut;
+    //residual is the value that get smoothed to 0 once the rewind is completed
     juce::LinearSmoothedValue<float> residual;
     juce::LinearSmoothedValue<float> gain;
     
-    float interp(float index)
-    {
-        int x0 = static_cast<int>(index);
-        int x1 = x0+1;
-        float f = index - static_cast<float>(x0);
-        return buffer[x0] * (1.0f - f) + buffer[x1] * f;
-    }
     /*
      
      xm1 ---> x[n-1]

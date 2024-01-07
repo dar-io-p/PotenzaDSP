@@ -59,7 +59,7 @@ public:
     float getStartSpeed() { return startSpeedParam->get(); }
     float getDuration() { return durationParam->get(); }
     float getPower() { return powerParam->get(); }
-    bool getDirection() { return directionParam->get(); }
+    SpeedEnvelope::Direction getDirection() { return directionParam->get() ? SpeedEnvelope::backwards : SpeedEnvelope::forwards; }
     
     CircularBuffer& getCircularBuffer () { return rewinder.getBuffer(); }
     

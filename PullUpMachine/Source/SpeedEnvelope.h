@@ -24,12 +24,13 @@ public:
         start = startSpeed;
         bpm = newBPM;
         timeInSamples = duration * ((60.0 / bpm) * 4 * sampleRate);
+        timeInSamples_recip = 1 / timeInSamples;
         power = pow;
     }
     
-    float getNextValue(bool trig=true)
+    float getNextValue()
     {
-        return trig ? (powerScale(index++) * direction) : 1.0f;
+        return powerScale(index++) * direction;
     }
     
     void reset()
@@ -45,10 +46,10 @@ public:
         }
         
         if (fabsf(power) < kMinPower){
-          return (start - (start / timeInSamples) * value);
+          return (start - (start * timeInSamples_recip) * value);
         }
         
-        float numerator = exp(power * (value / timeInSamples)) - 1.0f;
+        float numerator = exp(power * (value * timeInSamples_recip)) - 1.0f;
         float denominator = exp(power) - 1.0f;
         return start * (-(numerator / denominator) + 1);
     }
@@ -63,6 +64,7 @@ private:
     
     float start;
     float timeInSamples;
+    float timeInSamples_recip;
     float power;
         
     double bpm;

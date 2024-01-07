@@ -98,8 +98,8 @@ namespace param {
         UniqueRAPVector params;
         
         createFloatParam(params, PID::StartSpeed, 0, 20, 10);
-        createFloatParam(params, PID::Duration, 0, 4, 1);
-        createFloatParam(params, PID::BufferLength, 1.f/16.f, 2, 1);
+        createFloatParam(params, PID::Duration, 0.01, 4, 1);
+        createFloatParam(params, PID::BufferLength, 1.f/32.f, 4, 1);
         createFloatParam(params, PID::Power, -10, 10, 0);
         
         params.push_back(std::make_unique<APB>
@@ -116,7 +116,7 @@ namespace param {
          true
         ));
         
-        createFloatParam(params, PID::Gain, -100, 0, 0, true, -12);
+        createFloatParam(params, PID::Gain, -60, 0, 0, true, -6);
 
         return {params.begin(), params.end()};
     }

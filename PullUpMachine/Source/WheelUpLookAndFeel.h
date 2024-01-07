@@ -20,12 +20,12 @@ static const juce::Typeface::Ptr getTypeface()
     return typeface;
 }
 
-static const juce::Font getLabelFont()     {
-    return juce::Font(getTypeface()).withHeight(14.f);
-}
-static const juce::Font getTitleFont()     {
-    return juce::Font(getTypeface()).withHeight(16.f);
-}
+//static const juce::Font getLabelFont()     {
+//    return juce::Font(getTypeface()).withHeight(14.f);
+//}
+//static const juce::Font getTitleFont()     {
+//    return juce::Font(getTypeface()).withHeight(16.f);
+//}
 static const juce::Font getPlainFont()     {
     return juce::Font(getTypeface()).withHeight(12.f);
 }

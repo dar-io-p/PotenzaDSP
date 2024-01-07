@@ -15,7 +15,8 @@ PullUpMachineAudioProcessorEditor::PullUpMachineAudioProcessorEditor (PullUpMach
     volFader            (p.apvts, param::toID(param::PID::Gain), param::toName(param::PID::Gain)),
     bufferView          (p.getCircularBuffer())
 {
-    setSize (340, 490);
+    //contents is 340x490
+    setSize (340, 500);
     
     addAndMakeVisible(wheel);
     
@@ -76,6 +77,15 @@ void PullUpMachineAudioProcessorEditor::paint (juce::Graphics& g)
     //g.drawHorizontalLine(bufferView.getY()-4, 0, getWidth());
     g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.5f));
     g.drawLine(bufferView.getX() + 15, bufferView.getY(), bufferView.getRight() - 15, bufferView.getY(), 2.0f);
+    
+    auto titleRect = juce::Rectangle<int>(0,0,getWidth(), 30);
+    g.drawLine(titleRect.getX(), titleRect.getBottom(), titleRect.getRight(), titleRect.getBottom());
+
+    titleRect.reduce(10, 5);
+    g.setFont(styles::getBigTitleFont());
+    g.drawFittedText("PullUpMachine", titleRect, juce::Justification::centredLeft, 1);
+    g.drawFittedText("v1.0.0", titleRect, juce::Justification::centredRight, 1);
+    
 }
 
 void PullUpMachineAudioProcessorEditor::resized()
@@ -89,6 +99,9 @@ void PullUpMachineAudioProcessorEditor::resized()
         bounds.toFloat().getTopLeft(),
         false
     };
+    
+    //space for title
+    bounds.removeFromTop(10);
     
     wheel.setBounds(bounds.removeFromTop(300));
     
