@@ -116,7 +116,7 @@ jobs:
     - name: Set additional env vars for next steps
       shell: bash
       run: |
-        echo "ARTIFACTS_PATH=${{ env.BUILD_DIR }}/${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}" >> $GITHUB_ENV
+        echo "ARTIFACTS_PATH=${{ env.PROJECT_BUILD_DIR }}/${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}" >> $GITHUB_ENV
         echo "VST3_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/VST3/${{ env.PRODUCT_NAME }}.vst3" >> $GITHUB_ENV
         echo "AU_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AU/${{ env.PRODUCT_NAME }}.component" >> $GITHUB_ENV
         echo "AUV3_PATH=${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}/AUv3/${{ env.PRODUCT_NAME }}.appex" >> $GITHUB_ENV          
@@ -139,13 +139,13 @@ jobs:
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.VST3_PATH }}" --deep --strict --options=runtime --timestamp
         codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v "${{ env.AU_PATH }}" --deep --strict --options=runtime --timestamp
 
-    - name: Create zip, notarize and staple (macOS)
+    - name: Create, notarize, staple and package (macOS)
       if: ${{ matrix.name == 'macOS' }}
       run: |
         # Move the components to the packaging directory
         mkdir -p packaging
-        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging
-        mv "${{ env.PROJECT_DIR }}/${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging
+        mv "${{ env.ARTIFACTS_PATH }}/VST3/${{ env.PRODUCT_NAME }}.vst3" packaging
+        mv "${{ env.ARTIFACTS_PATH }}/AU/${{ env.PRODUCT_NAME }}.component" packaging
     
         # Zip the VST3
         cd packaging
@@ -172,19 +172,45 @@ jobs:
         
         # Zip both components together
         ls
-        zip -r "${{ env.PRODUCT_NAME }}.zip" "${{ env.PRODUCT_NAME }}.vst3" "${{ env.PRODUCT_NAME }}.component"
-        
-      
-    - name: Upload DMG (MacOS)
-      if: ${{ matrix.name == 'macOS' }}
-      uses: actions/upload-artifact@v3
-      # run: mkdir -p path/to/artifact
-      with:
-        name: ${{ env.PRODUCT_NAME }}.zip
-        path: packaging/${{ env.PRODUCT_NAME }}.zip
+        mkdir -p ${{ env.PRODUCT_NAME }}_MacOS
+        mv "${{ env.PRODUCT_NAME }}.vst3" ${{ env.PRODUCT_NAME }}_MacOS
+        mv "${{ env.PRODUCT_NAME }}.component" ${{ env.PRODUCT_NAME }}_MacOS
 
-    - name: Get Artifacts
-      uses: actions/download-artifact@v3
+
+    - name: Package (Linux)
+      if: ${{ matrix.name == 'Linux' }}
+      working-directory: ${{ env.ARTIFACTS_PATH }}
+      run: |
+        mkdir -p "${{ env.PRODUCT_NAME }}_Linux"
+        mv VST3/${{ env.PRODUCT_NAME }}.vst3 "${{ env.PRODUCT_NAME }}_Linux"
+
+    - name: Package (Windows)
+      if: ${{ matrix.name == 'Windows' }}
+      working-directory: ${{ env.ARTIFACTS_PATH }}
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ env.PRODUCT_NAME }}_Windows"
+        Move-Item VST3/${{ env.PRODUCT_NAME }}.vst3 "${{ env.PRODUCT_NAME }}_Windows"
+      
+    - name: Upload Zip (MacOS)
+      if: ${{ matrix.name == 'macOS' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PRODUCT_NAME }}_MacOS
+        path: packaging/${{ env.PRODUCT_NAME }}_MacOS
+
+    - name: Upload Zip (Windows)
+      if: ${{ matrix.name == 'Windows' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PRODUCT_NAME }}_Windows
+        path: ${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Windows
+
+    - name: Upload Zip (Linux)
+      if: ${{ matrix.name == 'Linux' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PRODUCT_NAME }}_Linux
+        path: ${{ env.ARTIFACTS_PATH }}/${{ env.PRODUCT_NAME }}_Linux
 
   release:
     # if: contains(github.ref, 'tags/v')
@@ -194,14 +220,3 @@ jobs:
     steps:
     - name: Get Artifacts
       uses: actions/download-artifact@v3
-
-    #- name: Create Release
-    #  uses: softprops/action-gh-release@v1
-    #  with:
-    #    prerelease: true
-    #    # download-artifact puts these files in their own dirs...
-    #    # Using globs sidesteps having to pass the version around
-    #    files: |
-    #      */*.exe
-    #      */*.zip
-    #      */*.dmg
