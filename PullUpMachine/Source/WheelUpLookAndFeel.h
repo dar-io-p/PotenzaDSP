@@ -19,18 +19,11 @@ static const juce::Typeface::Ptr getTypeface()
     static auto typeface = juce::Typeface::createSystemTypefaceFor (BinaryData::Futura_Heavy_font_ttf, BinaryData::Futura_Heavy_font_ttfSize);
     return typeface;
 }
-
-//static const juce::Font getLabelFont()     {
-//    return juce::Font(getTypeface()).withHeight(14.f);
-//}
-//static const juce::Font getTitleFont()     {
-//    return juce::Font(getTypeface()).withHeight(16.f);
-//}
 static const juce::Font getPlainFont()     {
     return juce::Font(getTypeface()).withHeight(12.f);
 }
 static const juce::Font getBigTitleFont()  {
-    return juce::Font(getTypeface()).withHeight(25.f);
+    return juce::Font(getTypeface()).withHeight(20.f);
 }
 
 }

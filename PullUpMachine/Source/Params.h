@@ -70,7 +70,10 @@ namespace param {
         
         std::function< juce::String(float, int)> stv = [](float value, int maximumStringLength)
         {
-            return juce::String(value, 2);
+            if (fabs(value) < 0.1f)
+                return juce::String(value, 3);
+            else
+                return juce::String(value, 2);
         };
             
         std::function< float(const juce::String)> vts = [](const juce::String &text)

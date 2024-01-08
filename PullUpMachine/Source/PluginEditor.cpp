@@ -74,17 +74,19 @@ void PullUpMachineAudioProcessorEditor::paint (juce::Graphics& g)
     x += w;
     g.drawFittedText("Power", x, y, w, h, juce::Justification::centred, 2);
     
-    //g.drawHorizontalLine(bufferView.getY()-4, 0, getWidth());
+    //draw divider for buffer view
     g.setColour(lnf.findColour(ptnz_gui::colour_ids::white).withAlpha(0.5f));
     g.drawLine(bufferView.getX() + 15, bufferView.getY(), bufferView.getRight() - 15, bufferView.getY(), 2.0f);
     
+    //draw divider for title view
     auto titleRect = juce::Rectangle<int>(0,0,getWidth(), 30);
-    g.drawLine(titleRect.getX(), titleRect.getBottom(), titleRect.getRight(), titleRect.getBottom());
-
-    titleRect.reduce(10, 5);
+    g.drawLine(titleRect.getX(), titleRect.getBottom(), titleRect.getRight(), titleRect.getBottom(), 2.0f);
+    
+    //draw title
+    titleRect.reduce(5, 5);
     g.setFont(styles::getBigTitleFont());
-    g.drawFittedText("PullUpMachine", titleRect, juce::Justification::centredLeft, 1);
-    g.drawFittedText("v1.0.0", titleRect, juce::Justification::centredRight, 1);
+    g.drawFittedText("PullUpMachine v1.0", titleRect, juce::Justification::centredLeft, 1);
+    g.drawFittedText("PotenzaDSP", titleRect, juce::Justification::centredRight, 1);
     
 }
 
